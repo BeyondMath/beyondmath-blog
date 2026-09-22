@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  BeyondMath Developer Blog · Cadgen2
+  ───────────────────────────────────
+  Standalone page, hosted on blog.beyondmath.com at:
+  https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/
+  ⚠ Before launch:
+    1. Confirm the launch date in <meta>, JSON-LD and .bm-meta.
+    2. Asset paths are LOCAL so this folder previews standalone. When this
+       moves into beyondmath-blog/posts/<slug>/, change the three
+       assets/images/* references and the Developer Blog link back to ../../
+       as in the DrivAerML post.
+-->
+
+<title>Cadgen2: Real-Time Modification of F1 Aerodynamic Surfaces — BeyondMath</title>
+<meta name="description" content="Cadgen2 derives a 28-handle DOE parameterisation from a supplied Formula 1 surface (front wing, wheel arch and rear diffuser) and modifies all three assemblies simultaneously in real time, with geometric validity measured on every sweep.">
+<meta name="author" content="BeyondMath">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/">
+
+<!-- Open Graph / Facebook / LinkedIn -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BeyondMath">
+<meta property="og:title" content="Cadgen2: Real-Time F1 Aerodynamic Geometry">
+<meta property="og:description" content="Cadgen2 derives a 28-handle DOE parameterisation from a supplied Formula 1 surface (front wing, wheel arch and rear diffuser) and modifies all three assemblies simultaneously in real time, with geometric validity measured on every sweep.">
+<meta property="og:url" content="https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/">
+<meta property="og:image" content="https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/assets/og-share-image.webp">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Cadgen2 modifying an F1 rear diffuser, displacement shown as a colour field">
+<meta property="article:published_time" content="2026-09-19">
+<meta property="article:author" content="BeyondMath">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cadgen2: Real-Time F1 Aerodynamic Geometry">
+<meta name="twitter:description" content="Cadgen2 derives a 28-handle DOE parameterisation from a supplied Formula 1 surface (front wing, wheel arch and rear diffuser) and modifies all three assemblies simultaneously in real time, with geometric validity measured on every sweep.">
+<meta name="twitter:image" content="https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/assets/og-share-image.webp">
+
+<!-- Favicon (pulled from the live beyondmath.com site) -->
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<meta name="theme-color" content="#EFEAE7">
+
+<!-- Structured data (Article rich results) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Cadgen2: Real-Time F1 Aerodynamic Geometry",
+  "description": "Cadgen2 derives a 28-handle DOE parameterisation from a supplied Formula 1 surface (front wing, wheel arch and rear diffuser) and modifies all three assemblies simultaneously in real time, with geometric validity measured on every sweep.",
+  "image": "https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/assets/og-share-image.webp",
+  "url": "https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/",
+  "datePublished": "2026-09-19",
+  "author": { "@type": "Organization", "name": "BeyondMath", "url": "https://www.beyondmath.com" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "BeyondMath",
+    "logo": { "@type": "ImageObject", "url": "https://blog.beyondmath.com/assets/images/beyondmath-logo.webp" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://blog.beyondmath.com/posts/20260919-cadgen2-f1-aero-doe/" }
+}
+</script>
+
+<style>
+/* Fonts — same files served by beyondmath.com; remove inside Webflow */
+@font-face{
+  font-family:'Roobert';
+  src:url('https://cdn.prod.website-files.com/69123307c6b1ae30d9ce0e14/6912ff278322d68bfd560a2b_RoobertVF-Regular-TRIAL.woff2') format('woff2');
+  font-weight:300 900;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Plasmaa Rondje';
+  src:url('https://cdn.prod.website-files.com/69123307c6b1ae30d9ce0e14/6912ff2757cc085300827894_PlasmaaTRIAL-Rondje.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
+
+/* Page shell for standalone preview only — Webflow provides its own body */
+html,body{margin:0;padding:0;background:#EFEAE7;}
+
+/* ── Scoped post styles ─────────────────────────────────────────── */
+.bm-post{
+  --steel:#EFEAE7;--black:#000;--white:#FFF;
+  --grey1:#D9D9D9;--grey2:#7B7B7B;--grey3:#444;
+  --yellow:#FFF15D;--amber:#FFA340;--orange:#FF7050;--magenta:#B7336C;--blue:#1C5BAA;
+  --gradient:linear-gradient(90deg,#FFF15D 0%,#FFA340 28%,#FF7050 52%,#B7336C 76%,#1C5BAA 100%);
+  --sans:'Roobert','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --tech:'Plasmaa Rondje',ui-monospace,'SF Mono',Menlo,monospace;
+  font-family:var(--sans);
+  background:var(--steel);
+  color:var(--black);
+  font-size:1.125rem;
+  line-height:1.55;
+  letter-spacing:-.18px;
+  padding:3rem 1.25rem 0;
+}
+.bm-post *{box-sizing:border-box;}
+
+/* column widths: prose narrow, media wide */
+.bm-post .bm-col{max-width:720px;margin:0 auto;}
+.bm-post .bm-wide{max-width:980px;margin:0 auto;}
+
+/* eyebrow */
+.bm-post .bm-eyebrow{
+  font-family:var(--tech);
+  font-size:.75rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--orange);
+  margin:0 0 1.25rem;
+}
+
+/* headings */
+.bm-post h1{
+  font-family:var(--sans);
+  font-size:clamp(2.5rem,6vw,4.25rem);
+  font-weight:400;
+  line-height:1.02;
+  letter-spacing:-.03em;
+  margin:0 0 1.5rem;
+}
+.bm-post h1 .bm-o{color:var(--orange);}
+.bm-post h2{
+  font-family:var(--sans);
+  font-size:clamp(1.75rem,3.5vw,2.5rem);
+  font-weight:400;
+  line-height:1.08;
+  letter-spacing:-.02em;
+  margin:3.5rem 0 1rem;
+}
+.bm-post .bm-standfirst{
+  font-size:clamp(1.25rem,2.2vw,1.5rem);
+  line-height:1.3;
+  letter-spacing:-.02em;
+  color:var(--black);
+  margin:0 0 1rem;
+}
+.bm-post .bm-meta{
+  font-family:var(--tech);
+  font-size:.75rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--grey2);
+  margin:0 0 2.5rem;
+}
+
+.bm-post p{margin:0 0 1.1rem;}
+.bm-post strong{font-weight:600;}
+.bm-post a{color:var(--black);text-decoration-color:var(--orange);text-decoration-thickness:2px;text-underline-offset:3px;}
+
+/* gradient rule */
+.bm-post .bm-rule{height:3px;background:var(--gradient);border:0;margin:3rem auto;}
+
+/* generic prose lists (options lists etc.) */
+.bm-post section.bm-col > ul{margin:0 0 1.1rem;padding-left:1.15rem;}
+.bm-post section.bm-col > ul li{margin:0 0 .5rem;}
+.bm-post section.bm-col > ul li:last-child{margin-bottom:0;}
+
+/* exec summary — stat row */
+.bm-post .bm-stats{
+  background:#0b0b0b;color:var(--white);
+  margin:1.5rem 0 1.25rem;
+  position:relative;
+}
+.bm-post .bm-stats::before{
+  content:"";display:block;height:3px;background:var(--gradient);
+}
+.bm-post .bm-stats-head{
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange);padding:1.5rem 2rem 0;
+}
+.bm-post .bm-stat-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  padding:1rem 0 1.75rem;
+}
+.bm-post .bm-stat{
+  padding:.5rem 2rem;text-align:left;
+  border-left:1px solid #2a2a2a;
+}
+.bm-post .bm-stat:first-child{border-left:0;}
+.bm-post .bm-stat .bm-stat-value{
+  font-family:var(--sans);font-weight:600;font-size:2.5rem;
+  line-height:1.05;letter-spacing:-.02em;
+  color:var(--white);margin:0 0 .35rem;
+}
+.bm-post .bm-stat:first-child .bm-stat-value{color:var(--yellow);}
+.bm-post .bm-stat .bm-stat-label{
+  font-size:.9rem;line-height:1.35;color:var(--grey1);
+}
+@media (max-width:640px){
+  .bm-post .bm-stat-row{grid-template-columns:1fr;}
+  .bm-post .bm-stat{border-left:0;border-top:1px solid #2a2a2a;padding:1.1rem 2rem;}
+  .bm-post .bm-stat:first-child{border-top:0;}
+}
+
+/* tables */
+.bm-post .bm-tablewrap{overflow-x:auto;margin:1.5rem 0;}
+.bm-post table{
+  border-collapse:collapse;width:100%;
+  background:var(--steel);
+  font-size:.95rem;letter-spacing:0;
+}
+.bm-post caption{
+  caption-side:top;text-align:left;
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--grey2);padding:0 0 .5rem;
+}
+.bm-post th,.bm-post td{
+  border:1px solid var(--grey1);
+  padding:.6rem .9rem;text-align:left;
+}
+.bm-post th{font-weight:600;background:var(--black);color:var(--white);border-color:var(--black);}
+.bm-post tr.bm-win td{background:var(--yellow);}
+.bm-post td.bm-best{font-weight:700;}
+
+/* figures */
+.bm-post figure{margin:2rem 0;}
+.bm-post figure.bm-wide{margin:2.5rem auto;}
+.bm-post figure.bm-hero{max-width:490px;}
+.bm-post figure img{width:100%;height:auto;display:block;border:1px solid var(--grey1);}
+.bm-post figcaption{
+  font-family:var(--tech);font-size:.72rem;letter-spacing:.06em;
+  color:var(--grey2);margin-top:.6rem;line-height:1.5;
+}
+.bm-post .bm-pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:640px){.bm-post .bm-pair{grid-template-columns:1fr;}}
+
+/* video embed */
+.bm-post .bm-video{
+  width:100%;height:auto;display:block;
+  border:1px solid var(--grey1);
+  background:#000;
+}
+
+/* agent log panel */
+.bm-post .bm-log{
+  background:#0b0b0b;color:var(--white);
+  padding:1.75rem 2rem;margin:2rem 0;
+  font-size:1rem;
+}
+.bm-post .bm-log .bm-log-head{
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange);margin:0 0 1rem;
+}
+.bm-post .bm-log p{margin:0 0 .35rem;color:var(--grey1);}
+.bm-post .bm-log p:last-child{margin:0;}
+.bm-post .bm-log em{color:var(--white);font-style:normal;font-weight:600;}
+
+/* pull line */
+.bm-post .bm-pull{
+  font-size:clamp(1.35rem,2.4vw,1.75rem);line-height:1.25;letter-spacing:-.02em;
+  border-left:4px solid var(--orange);
+  padding-left:1.25rem;margin:2.5rem 0;
+}
+
+/* site header / footer bars — bookend the article, link back to beyondmath.com
+   NOTE: these sit outside .bm-post, so they cannot use its scoped custom
+   properties (--tech, --black, etc.) — values are hardcoded here instead. */
+.bm-sitebar{
+  background:#EFEAE7;
+  padding:1.25rem 1.25rem;
+}
+.bm-sitebar-inner{
+  max-width:980px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.75rem;
+}
+.bm-sitebar-logo{display:block;line-height:0;}
+.bm-sitebar-logo img{height:22px;width:auto;display:block;}
+.bm-sitebar-tag{
+  font-family:'Plasmaa Rondje',ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;
+  color:#000;
+}
+.bm-sitebar-tag a{color:#000;text-decoration:none;border-bottom:1px solid #D9D9D9;}
+.bm-sitebar-tag a:hover{border-color:#000;}
+
+.bm-sitefoot{
+  background:#EFEAE7;
+  border-top:1px solid #D9D9D9;
+  padding:2rem 1.25rem;
+  margin-top:0;
+}
+.bm-sitefoot-inner{
+  max-width:980px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.bm-sitefoot-logo{display:block;line-height:0;}
+.bm-sitefoot-logo img{height:20px;width:auto;display:block;}
+.bm-sitefoot-meta{
+  font-family:'Plasmaa Rondje',ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;
+  color:#000;text-align:right;
+}
+.bm-sitefoot-meta a{color:#000;text-decoration:none;border-bottom:1px solid #D9D9D9;}
+.bm-sitefoot-meta a:hover{border-color:#000;}
+
+/* CTA */
+.bm-post .bm-cta{
+  background:var(--black);color:var(--white);
+  padding:3.5rem 2rem;margin:4rem -1.25rem 0;
+  text-align:center;
+}
+.bm-post .bm-cta h2{margin:0 0 .75rem;color:var(--white);}
+.bm-post .bm-cta p{color:var(--grey1);max-width:560px;margin:0 auto 1.75rem;}
+.bm-post .bm-cta a.bm-btn{
+  display:inline-block;background:var(--yellow);color:var(--black);
+  font-weight:600;text-decoration:none;
+  padding:.9rem 2.2rem;letter-spacing:0;
+}
+.bm-post .bm-cta a.bm-btn:hover{background:var(--white);}
+</style>
+<style>
+/* ── Additions for this post ─────────────────────────────────────── */
+/* body-of-materials / parameter grid: a compact spec block */
+.bm-post .bm-specs{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:0 2.5rem;
+  margin:1.5rem 0;
+}
+.bm-post .bm-spec{
+  display:flex;justify-content:space-between;gap:1rem;
+  padding:.55rem 0;border-bottom:1px solid var(--grey1);
+}
+.bm-post .bm-spec dt{
+  font-family:var(--tech);font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--grey2);margin:0;padding-top:.2rem;
+}
+.bm-post .bm-spec dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;}
+@media (max-width:640px){.bm-post .bm-specs{grid-template-columns:1fr;gap:0;}}
+
+/* a failure note — the things that went wrong, called out as such */
+.bm-post .bm-snag{
+  border-left:4px solid var(--grey1);
+  padding:.1rem 0 .1rem 1.25rem;margin:1.75rem 0;
+}
+.bm-post .bm-snag .bm-snag-head{
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--grey2);margin:0 0 .5rem;
+}
+.bm-post .bm-snag p:last-child{margin:0;}
+
+/* inline code / solver cards */
+.bm-post code{
+  font-family:var(--tech);font-size:.9em;
+  background:#E4DED9;padding:.1em .35em;
+}
+.bm-post .bm-log code{background:#1a1a1a;color:var(--grey1);}
+.bm-post .bm-log .bm-logline{
+  display:block;background:#1a1a1a;color:var(--grey1);
+  font-family:var(--tech);font-size:.82rem;letter-spacing:.02em;
+  padding:.5rem .7rem;margin:0 0 .3rem;
+  white-space:pre;overflow-x:auto;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Site bar — links back to the main beyondmath.com site ── -->
+<div class="bm-sitebar">
+  <div class="bm-sitebar-inner">
+    <a class="bm-sitebar-logo" href="https://www.beyondmath.com" aria-label="BeyondMath home">
+      <img src="assets/images/beyondmath-logo.webp" alt="BeyondMath" width="900" height="140">
+    </a>
+    <p class="bm-sitebar-tag"><a href="https://blog.beyondmath.com/">Developer Blog</a> · <a href="https://www.beyondmath.com">beyondmath.com</a></p>
+  </div>
+</div>
+
+<article class="bm-post">
+
+  <header class="bm-col">
+    <p class="bm-eyebrow">Physics Factory · Cadgen2 · motorsport aerodynamics</p>
+    <h1>Real-Time Modification of <span class="bm-o">F1 Aerodynamic Surfaces</span></h1>
+    <p class="bm-standfirst">Cadgen2 generates engineering-grade CAD assemblies from specifications, produces controlled design variants with defeatured geometry and extracts DOE parameterisations from imported CAD models. This article covers the second case study: a 2022-generation Formula 1 car. The parameterisation was derived from the supplied surface without a feature tree, and the front wing, wheel arch and rear diffuser are modified simultaneously and interactively.</p>
+    <p class="bm-meta">BeyondMath · September 2026</p>
+  </header>
+
+  <figure class="bm-wide">
+    <img src="assets/f1-live-doe-poster.jpg" alt="Cadgen2 modifying an F1 front wing: flap angle handle at -3.84 degrees, with displacement shown as a colour field over the wing surface" width="1920" height="1103">
+    <figcaption>Flap angle on elements 3 and 4, swept within its −4 … 4° DOE range. Colour indicates displacement as a fraction of that part's maximum displacement; the rest of the car is ghosted.</figcaption>
+  </figure>
+
+  <!-- ── The aerodynamic problem ── -->
+  <section class="bm-col">
+    <h2>The aerodynamic problem</h2>
+    <p>The front wing determines the upstream flow conditions for the rest of the car. Its wake conditions the flow onto the floor leading edge, sidepod inlets, brake ducts and diffuser, so a front wing change affects the flow along the full length of the car. The wheel arch operates in the front wing wake and in the separated flow from the tyre, and diffuser performance depends on the flow arriving at its inlet. Performance differences between candidate designs are driven by a small set of geometric quantities:</p>
+    <ul>
+      <li><strong>Front wing:</strong> element angles, the slot gaps between elements, spanwise twist distribution, and endplate geometry, which controls how much flow is turned outboard of the front tyre.</li>
+      <li><strong>Wheel arch:</strong> cowl height and incidence, fence dish, and the upper and lower slot gaps and shifts, which control the air bled through the arch instead of around it.</li>
+      <li><strong>Rear diffuser:</strong> ramp angle, roof height at the throat and at the exit, keel height, tunnel width and roof camber, plus the incidence, camber and twist of the strakes mounted inside each tunnel.</li>
+    </ul>
+    <p>Identifying the best-performing combination requires generating and evaluating many variants of these surfaces. In conventional CAD this is slow and expensive, for reasons specific to this class of geometry:</p>
+    <ul>
+      <li><strong>No parametric controls.</strong> Aerodynamic surfaces are sculpted meshes or sewn B-rep produced through surfacing and CFD iteration. Without a feature tree, a dimensional change requires re-surfacing instead of a parameter edit.</li>
+      <li><strong>Continuity and interfaces must be preserved.</strong> A modified element must retain tangency and curvature continuity with adjacent surfaces, keep its mounting faces at the positions the structure requires, and remain inside its regulatory volume. Each of these is checked manually.</li>
+      <li><strong>Parts are coupled.</strong> Raising a diffuser tunnel roof moves the strakes mounted on it. Wing changes must leave the mount position unchanged. Propagating a change across an assembly increases both the workload and the number of potential errors.</li>
+      <li><strong>Parameter count exceeds manual capacity.</strong> Approximately thirty geometric quantities span these three assemblies. At five levels each, the full combinatorial space contains millions of variants, and a useful subset still contains thousands. At several hours of surfacing work per variant, the study cannot be carried out manually.</li>
+      <li><strong>Each variant requires a validity check before solving.</strong> A morph or re-surface that folds the mesh, inverts elements or creases the surface either fails in the mesher or produces a plausible but incorrect CFD result.</li>
+    </ul>
+  </section>
+
+  <section class="bm-col">
+    <h2>Current workflow constraints</h2>
+    <p>Engineering-grade CAD production is largely manual. The main costs are:</p>
+    <ul>
+      <li><strong>Synchronisation across multipart assemblies.</strong> A dimensional change must propagate to mating parts, clearances, fastener positions and specification documents. Each propagation path is a potential source of divergence between model and drawing.</li>
+      <li><strong>Constraint compliance.</strong> Wall thickness, clearance, draft, minimum feature size and material allowables are typically enforced through manual design review. Violations are therefore identified late in the programme.</li>
+      <li><strong>Physical evaluation outside the design environment.</strong> CAD systems do not report structural performance or cost during modelling. Evaluation requires export to a separate simulation tool, meshing, solving and post-processing, with a cycle time of days per iteration. Most programmes are consequently limited to a small number of candidate geometries.</li>
+    </ul>
+    <p>Cadgen2 is an AI-driven CAD engine that automates assembly creation, modification and specification, and connects to physics-based evaluation so that variants are generated and assessed within a single workflow. Outputs include per-part specifications, GD&amp;T records, a bill of materials and STEP geometry.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>Capabilities</h2>
+    <ul>
+      <li><strong>Automated design creation.</strong> Generates complete assemblies from a written specification, sketch, reference image or parameter table.</li>
+      <li><strong>Precision design variations.</strong> Applies natural-language instructions to a fully attributed component specification. A change can be scoped to a single dimension on one part or applied across the full assembly.</li>
+      <li><strong>Simulation defeaturing.</strong> Prepares geometry for meshing during generation. Load-bearing features are retained; features that increase element count without contributing to structural response are removed.</li>
+      <li><strong>Physics AI training data generation.</strong> Generates geometry variants across a defined design space, simulates each variant, and formats the results for Physics AI model training.</li>
+      <li><strong>End-to-end workflows.</strong> Connects to Physics Factory for design space definition, dataset consolidation, Physics AI model training and feedback into subsequent design iterations.</li>
+    </ul>
+    <p>Model generation incorporates automated verification to detect and resolve non-physical geometry, specification inconsistencies and constraint violations. All validation checks execute directly on the generated geometry and exported files.</p>
+  </section>
+
+  <hr class="bm-rule bm-col">
+
+  <!-- ── The Cadgen2 approach ── -->
+  <section class="bm-col">
+    <h2>The Cadgen2 approach</h2>
+    <p>Inputs to the study were the geometry, the permitted dimensional ranges and the optimisation objectives. No parametric model, feature tree or construction history was supplied, and no handles were defined manually.</p>
+    <p>Cadgen2 analysed the supplied CAD to determine the parameterisation: which quantities are available as control handles, the extent of each handle's region of influence, and how displacement blends into the surrounding surface. The result was <strong>28 DOE handles</strong> across three assemblies:</p>
+    <ul>
+      <li><strong>Front wing — 8 handles.</strong> Flap angle on elements 3 and 4 together, top flap adjuster on element 4 alone, flap twist across span, mainplane angle on elements 1 and 2, the E2–E3 slot gap, endplate kick and endplate lean.</li>
+      <li><strong>Wheel arch — 8 handles.</strong> Spanwise arch, cowl height, cowl incidence, fence dish, upper and lower slot gap, upper and lower slot shift.</li>
+      <li><strong>Rear diffuser — 7 handles.</strong> Ramp angle, roof at the throat, roof at the exit, central keel height, tunnel roof camber, outer wall and tunnel width, roof twist about the tunnel.</li>
+      <li><strong>Diffuser strakes, two per tunnel — 5 handles.</strong> Incidence, camber, twist root to tip, tip curl, lower edge at the exit.</li>
+    </ul>
+    <p>The parameterisation has three relevant properties:</p>
+    <p><strong>Modification is multi-assembly and simultaneous.</strong> A handle acts on a set of surfaces instead of a single patch. Flap angle rotates elements 3 and 4 together because that is the aerodynamically relevant degree of freedom. Both sides of the car are morphed, with the right side derived as the mirror of the left. The study model contains 46 parts; the front wing and wheel arch are morphed and the remaining parts are held at their as-built geometry.</p>
+    <p><strong>Engineering interfaces are held automatically.</strong> The front wing mount band (|y| ≤ 170 mm) has zero weight for every handle, so the wing remains exactly on its mounting face at every DOE setting and nearby deformations do not displace it. The wheel arch in this study is an imported surface that occupies the same space as the parametric arch it replaces, so spatial alignment is maintained without re-registration after each edit.</p>
+    <p><strong>Displacement fields are defined over space, not per part.</strong> A diffuser handle that raises the tunnel roof also moves the strakes mounted on it, because the field is evaluated at the strake positions. The strakes remain attached to the roof, consistent with the physical assembly.</p>
+  </section>
+
+  <figure class="bm-wide">
+    <video class="bm-video" id="bm-f1-video" loop muted playsinline controls preload="metadata" poster="assets/f1-live-doe-poster.jpg">
+      <source src="assets/f1-live-doe.mp4" type="video/mp4">
+    </video>
+    <figcaption>Full walkthrough. Each of the 28 handles is swept to the upper limit of its DOE range. Colour shows the displacement of each point as a fraction of that handle's maximum displacement, and per-handle validity metrics are displayed on each frame.</figcaption>
+  </figure>
+
+  <!-- ── Validity ── -->
+  <section class="bm-col">
+    <h2>Geometric validity metrics</h2>
+    <p>Each handle is swept to its DOE limit to confirm that the morph remains valid across the full range. Validity is measured on the mesh, not assessed visually. Representative values at the limit:</p>
+    <div class="bm-tablewrap">
+      <table>
+        <caption>Handle validity at the DOE limit · measured on the mesh</caption>
+        <thead>
+          <tr><th>Handle</th><th>Range</th><th>Material moved</th><th>Crease p99</th><th>Surface creased</th><th>Folds</th><th>Flipped area</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>flap angle (E3+E4)</td><td>−4 … 4°</td><td>20.45 mm</td><td>2.6°</td><td>0%</td><td>0</td><td>0%</td></tr>
+          <tr><td>upper slot gap (arch)</td><td>−4 … 8 mm</td><td>8 mm</td><td>15.2°</td><td>4.02%</td><td>0</td><td>0.0009%</td></tr>
+          <tr><td>roof at the throat</td><td>−15 … 15 mm</td><td>15 mm</td><td>6.2°</td><td>0.62%</td><td>0</td><td>0%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>These metrics determine whether a surface can be meshed and solved. <em>Crease</em> is the added dihedral angle between adjacent facets, reported at the 99th percentile with the fraction of surface area affected. <em>Folds</em> is the number of self-intersections in the deformed surface. <em>Flipped area</em> is the fraction of surface area with an inverted normal. For the three handles above and across the full sweep, folds are zero and flipped area is zero or 0.0009%, with vertex ordering preserved to within 0.009 mm. Morphed surfaces are passed to the mesher without a repair step.</p>
+    <p>Limitations: the displacement field deforms a supplied baseline and does not add or remove topology, so a feature absent from the imported geometry cannot be introduced by a handle. On B-rep input, the field is fitted to the NURBS poles instead of applied exactly; the residual is measured against the exact field, and the fit is rejected if it exceeds tolerance in the displaced region. On mesh input, vertices are displaced exactly.</p>
+  </section>
+
+  <!-- ── What it changes ── -->
+  <section class="bm-col">
+    <h2>Effect of real-time modification</h2>
+    <p>A single handle is applied to the full surface in under one second. On a comparable 90,497-triangle car surface, application time was 465–547 ms across three settings, which is compatible with an interactive loop instead of a rebuild cycle. This has three consequences:</p>
+    <ul>
+      <li><strong>The DOE is a parameter table.</strong> Each variant is a set of handle values. Geometry for several hundred points is generated by a scripted sweep, and each point is reproduced from its parameter values without storing a separate geometry file.</li>
+      <li><strong>Exploration and evaluation are combined.</strong> Variants are valid when generated, so they can be passed to a solver or to a trained physics AI model without a manual repair stage between design and evaluation.</li>
+      <li><strong>The parameterisation is reusable.</strong> Handles derived from the geometry apply to any surface of the same topology, so a new baseline reuses the existing study setup without rebuilding it.</li>
+    </ul>
+    <p>The first case study in this series is covered in <a target="_blank" href="../20260919-cadgen2-tablet-variant-study/">the companion post</a>: an engineering assembly generated from a written specification, expanded to 50 variants and solved with explicit structural simulation.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>AI-driven CAD design and optimisation</h2>
+    <p>Cadgen2 is a component of the Physics Factory platform. It generates the geometric variation required for physics-based optimisation. These variants are used to train models built on BeyondMath's foundational Physics AI, and the trained models are used to optimise designs against simulated physical response instead of a proxy metric.</p>
+    <p>Variant requirements differ by use case. Design exploration on a released product typically requires a small number of controlled variants with correct specifications and a BOM. A training campaign requires several hundred decorrelated variants with solver decks attached. Both are generated from a parameter table applied to a single layout model. Each variant is stored as a parameter state of a few hundred bytes and rebuilds to identical geometry.</p>
+  </section>
+
+  <!-- ── CTA ── -->
+  <div class="bm-cta">
+    <p class="bm-eyebrow" style="color:var(--orange)">Get access</p>
+    <h2>Generate and simulate design variants</h2>
+    <p>Physics Factory covers geometry generation, simulation and model training on your own data, for structural, CFD, thermal and other physics.</p>
+    <a class="bm-btn" href="https://physicsfactory.beyondmath.com/login#start">Get access</a>
+  </div>
+
+</article>
+
+<!-- ── Site footer — links back to the main beyondmath.com site ── -->
+<div class="bm-sitefoot">
+  <div class="bm-sitefoot-inner">
+    <a class="bm-sitefoot-logo" href="https://www.beyondmath.com" aria-label="BeyondMath home">
+      <img src="assets/images/beyondmath-logo.webp" alt="BeyondMath" width="900" height="140">
+    </a>
+    <p class="bm-sitefoot-meta">© 2026 BeyondMath · <a href="https://www.beyondmath.com">beyondmath.com</a></p>
+  </div>
+</div>
+
+<script>
+// Play each video only while it is on screen; pause when scrolled away.
+(function(){
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.play().catch(function(){}); }
+      else { e.target.pause(); }
+    });
+  }, { threshold: 0.35 });
+  ['bm-f1-video'].forEach(function(id){
+    var v = document.getElementById(id);
+    if (v) io.observe(v);
+  });
+})();
+</script>
+
+</body>
+</html>

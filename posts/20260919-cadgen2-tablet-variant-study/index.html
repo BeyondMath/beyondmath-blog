@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!--
+  BeyondMath Developer Blog · Cadgen2
+  ───────────────────────────────────
+  Standalone page, hosted on blog.beyondmath.com at:
+  https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/
+  ⚠ Before launch:
+    1. Confirm the launch date in <meta>, JSON-LD and .bm-meta.
+    2. Asset paths are LOCAL so this folder previews standalone. When this
+       moves into beyondmath-blog/posts/<slug>/, change the three
+       assets/images/* references and the Developer Blog link back to ../../
+       as in the DrivAerML post.
+-->
+
+<title>Cadgen2: Generating and Solving a 50-Variant Tablet Study — BeyondMath</title>
+<meta name="description" content="Cadgen2 generates engineering-grade CAD assemblies from specifications, produces controlled design variants with defeatured geometry, BOM and STEP outputs, and prepares each variant for structural simulation.">
+<meta name="author" content="BeyondMath">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/">
+
+<!-- Open Graph / Facebook / LinkedIn -->
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="BeyondMath">
+<meta property="og:title" content="Cadgen2: A 50-Variant Tablet Study">
+<meta property="og:description" content="Cadgen2 generates engineering-grade CAD assemblies from specifications, produces controlled design variants with defeatured geometry, BOM and STEP outputs, and prepares each variant for structural simulation.">
+<meta property="og:url" content="https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/">
+<meta property="og:image" content="https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/assets/og-share-image.webp">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Von Mises stress on a tablet enclosure during a 1 m corner-first drop">
+<meta property="article:published_time" content="2026-09-19">
+<meta property="article:author" content="BeyondMath">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Cadgen2: A 50-Variant Tablet Study">
+<meta name="twitter:description" content="Cadgen2 generates engineering-grade CAD assemblies from specifications, produces controlled design variants with defeatured geometry, BOM and STEP outputs, and prepares each variant for structural simulation.">
+<meta name="twitter:image" content="https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/assets/og-share-image.webp">
+
+<!-- Favicon (pulled from the live beyondmath.com site) -->
+<link rel="icon" type="image/png" href="assets/images/favicon.png">
+<link rel="apple-touch-icon" href="assets/images/apple-touch-icon.png">
+<meta name="theme-color" content="#EFEAE7">
+
+<!-- Structured data (Article rich results) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Cadgen2: A 50-Variant Tablet Study",
+  "description": "Cadgen2 generates engineering-grade CAD assemblies from specifications, produces controlled design variants with defeatured geometry, BOM and STEP outputs, and prepares each variant for structural simulation.",
+  "image": "https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/assets/og-share-image.webp",
+  "url": "https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/",
+  "datePublished": "2026-09-19",
+  "author": { "@type": "Organization", "name": "BeyondMath", "url": "https://www.beyondmath.com" },
+  "publisher": {
+    "@type": "Organization",
+    "name": "BeyondMath",
+    "logo": { "@type": "ImageObject", "url": "https://blog.beyondmath.com/assets/images/beyondmath-logo.webp" }
+  },
+  "mainEntityOfPage": { "@type": "WebPage", "@id": "https://blog.beyondmath.com/posts/20260919-cadgen2-tablet-variant-study/" }
+}
+</script>
+
+<style>
+/* Fonts — same files served by beyondmath.com; remove inside Webflow */
+@font-face{
+  font-family:'Roobert';
+  src:url('https://cdn.prod.website-files.com/69123307c6b1ae30d9ce0e14/6912ff278322d68bfd560a2b_RoobertVF-Regular-TRIAL.woff2') format('woff2');
+  font-weight:300 900;font-style:normal;font-display:swap;
+}
+@font-face{
+  font-family:'Plasmaa Rondje';
+  src:url('https://cdn.prod.website-files.com/69123307c6b1ae30d9ce0e14/6912ff2757cc085300827894_PlasmaaTRIAL-Rondje.woff2') format('woff2');
+  font-weight:400;font-style:normal;font-display:swap;
+}
+
+/* Page shell for standalone preview only — Webflow provides its own body */
+html,body{margin:0;padding:0;background:#EFEAE7;}
+
+/* ── Scoped post styles ─────────────────────────────────────────── */
+.bm-post{
+  --steel:#EFEAE7;--black:#000;--white:#FFF;
+  --grey1:#D9D9D9;--grey2:#7B7B7B;--grey3:#444;
+  --yellow:#FFF15D;--amber:#FFA340;--orange:#FF7050;--magenta:#B7336C;--blue:#1C5BAA;
+  --gradient:linear-gradient(90deg,#FFF15D 0%,#FFA340 28%,#FF7050 52%,#B7336C 76%,#1C5BAA 100%);
+  --sans:'Roobert','Helvetica Neue',Helvetica,Arial,sans-serif;
+  --tech:'Plasmaa Rondje',ui-monospace,'SF Mono',Menlo,monospace;
+  font-family:var(--sans);
+  background:var(--steel);
+  color:var(--black);
+  font-size:1.125rem;
+  line-height:1.55;
+  letter-spacing:-.18px;
+  padding:3rem 1.25rem 0;
+}
+.bm-post *{box-sizing:border-box;}
+
+/* column widths: prose narrow, media wide */
+.bm-post .bm-col{max-width:720px;margin:0 auto;}
+.bm-post .bm-wide{max-width:980px;margin:0 auto;}
+
+/* eyebrow */
+.bm-post .bm-eyebrow{
+  font-family:var(--tech);
+  font-size:.75rem;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--orange);
+  margin:0 0 1.25rem;
+}
+
+/* headings */
+.bm-post h1{
+  font-family:var(--sans);
+  font-size:clamp(2.5rem,6vw,4.25rem);
+  font-weight:400;
+  line-height:1.02;
+  letter-spacing:-.03em;
+  margin:0 0 1.5rem;
+}
+.bm-post h1 .bm-o{color:var(--orange);}
+.bm-post h2{
+  font-family:var(--sans);
+  font-size:clamp(1.75rem,3.5vw,2.5rem);
+  font-weight:400;
+  line-height:1.08;
+  letter-spacing:-.02em;
+  margin:3.5rem 0 1rem;
+}
+.bm-post .bm-standfirst{
+  font-size:clamp(1.25rem,2.2vw,1.5rem);
+  line-height:1.3;
+  letter-spacing:-.02em;
+  color:var(--black);
+  margin:0 0 1rem;
+}
+.bm-post .bm-meta{
+  font-family:var(--tech);
+  font-size:.75rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--grey2);
+  margin:0 0 2.5rem;
+}
+
+.bm-post p{margin:0 0 1.1rem;}
+.bm-post strong{font-weight:600;}
+.bm-post a{color:var(--black);text-decoration-color:var(--orange);text-decoration-thickness:2px;text-underline-offset:3px;}
+
+/* gradient rule */
+.bm-post .bm-rule{height:3px;background:var(--gradient);border:0;margin:3rem auto;}
+
+/* generic prose lists (options lists etc.) */
+.bm-post section.bm-col > ul{margin:0 0 1.1rem;padding-left:1.15rem;}
+.bm-post section.bm-col > ul li{margin:0 0 .5rem;}
+.bm-post section.bm-col > ul li:last-child{margin-bottom:0;}
+
+/* exec summary — stat row */
+.bm-post .bm-stats{
+  background:#0b0b0b;color:var(--white);
+  margin:1.5rem 0 1.25rem;
+  position:relative;
+}
+.bm-post .bm-stats::before{
+  content:"";display:block;height:3px;background:var(--gradient);
+}
+.bm-post .bm-stats-head{
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange);padding:1.5rem 2rem 0;
+}
+.bm-post .bm-stat-row{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  padding:1rem 0 1.75rem;
+}
+.bm-post .bm-stat{
+  padding:.5rem 2rem;text-align:left;
+  border-left:1px solid #2a2a2a;
+}
+.bm-post .bm-stat:first-child{border-left:0;}
+.bm-post .bm-stat .bm-stat-value{
+  font-family:var(--sans);font-weight:600;font-size:2.5rem;
+  line-height:1.05;letter-spacing:-.02em;
+  color:var(--white);margin:0 0 .35rem;
+}
+.bm-post .bm-stat:first-child .bm-stat-value{color:var(--yellow);}
+.bm-post .bm-stat .bm-stat-label{
+  font-size:.9rem;line-height:1.35;color:var(--grey1);
+}
+@media (max-width:640px){
+  .bm-post .bm-stat-row{grid-template-columns:1fr;}
+  .bm-post .bm-stat{border-left:0;border-top:1px solid #2a2a2a;padding:1.1rem 2rem;}
+  .bm-post .bm-stat:first-child{border-top:0;}
+}
+
+/* tables */
+.bm-post .bm-tablewrap{overflow-x:auto;margin:1.5rem 0;}
+.bm-post table{
+  border-collapse:collapse;width:100%;
+  background:var(--steel);
+  font-size:.95rem;letter-spacing:0;
+}
+.bm-post caption{
+  caption-side:top;text-align:left;
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--grey2);padding:0 0 .5rem;
+}
+.bm-post th,.bm-post td{
+  border:1px solid var(--grey1);
+  padding:.6rem .9rem;text-align:left;
+}
+.bm-post th{font-weight:600;background:var(--black);color:var(--white);border-color:var(--black);}
+.bm-post tr.bm-win td{background:var(--yellow);}
+.bm-post td.bm-best{font-weight:700;}
+
+/* figures */
+.bm-post figure{margin:2rem 0;}
+.bm-post figure.bm-wide{margin:2.5rem auto;}
+.bm-post figure.bm-hero{max-width:490px;}
+.bm-post figure img{width:100%;height:auto;display:block;border:1px solid var(--grey1);}
+.bm-post figcaption{
+  font-family:var(--tech);font-size:.72rem;letter-spacing:.06em;
+  color:var(--grey2);margin-top:.6rem;line-height:1.5;
+}
+.bm-post .bm-pair{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+@media (max-width:640px){.bm-post .bm-pair{grid-template-columns:1fr;}}
+
+/* video embed */
+.bm-post .bm-video{
+  width:100%;height:auto;display:block;
+  border:1px solid var(--grey1);
+  background:#000;
+}
+
+/* agent log panel */
+.bm-post .bm-log{
+  background:#0b0b0b;color:var(--white);
+  padding:1.75rem 2rem;margin:2rem 0;
+  font-size:1rem;
+}
+.bm-post .bm-log .bm-log-head{
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange);margin:0 0 1rem;
+}
+.bm-post .bm-log p{margin:0 0 .35rem;color:var(--grey1);}
+.bm-post .bm-log p:last-child{margin:0;}
+.bm-post .bm-log em{color:var(--white);font-style:normal;font-weight:600;}
+
+/* pull line */
+.bm-post .bm-pull{
+  font-size:clamp(1.35rem,2.4vw,1.75rem);line-height:1.25;letter-spacing:-.02em;
+  border-left:4px solid var(--orange);
+  padding-left:1.25rem;margin:2.5rem 0;
+}
+
+/* site header / footer bars — bookend the article, link back to beyondmath.com
+   NOTE: these sit outside .bm-post, so they cannot use its scoped custom
+   properties (--tech, --black, etc.) — values are hardcoded here instead. */
+.bm-sitebar{
+  background:#EFEAE7;
+  padding:1.25rem 1.25rem;
+}
+.bm-sitebar-inner{
+  max-width:980px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:.75rem;
+}
+.bm-sitebar-logo{display:block;line-height:0;}
+.bm-sitebar-logo img{height:22px;width:auto;display:block;}
+.bm-sitebar-tag{
+  font-family:'Plasmaa Rondje',ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;
+  color:#000;
+}
+.bm-sitebar-tag a{color:#000;text-decoration:none;border-bottom:1px solid #D9D9D9;}
+.bm-sitebar-tag a:hover{border-color:#000;}
+
+.bm-sitefoot{
+  background:#EFEAE7;
+  border-top:1px solid #D9D9D9;
+  padding:2rem 1.25rem;
+  margin-top:0;
+}
+.bm-sitefoot-inner{
+  max-width:980px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:1rem;
+}
+.bm-sitefoot-logo{display:block;line-height:0;}
+.bm-sitefoot-logo img{height:20px;width:auto;display:block;}
+.bm-sitefoot-meta{
+  font-family:'Plasmaa Rondje',ui-monospace,'SF Mono',Menlo,monospace;
+  font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;
+  color:#000;text-align:right;
+}
+.bm-sitefoot-meta a{color:#000;text-decoration:none;border-bottom:1px solid #D9D9D9;}
+.bm-sitefoot-meta a:hover{border-color:#000;}
+
+/* CTA */
+.bm-post .bm-cta{
+  background:var(--black);color:var(--white);
+  padding:3.5rem 2rem;margin:4rem -1.25rem 0;
+  text-align:center;
+}
+.bm-post .bm-cta h2{margin:0 0 .75rem;color:var(--white);}
+.bm-post .bm-cta p{color:var(--grey1);max-width:560px;margin:0 auto 1.75rem;}
+.bm-post .bm-cta a.bm-btn{
+  display:inline-block;background:var(--yellow);color:var(--black);
+  font-weight:600;text-decoration:none;
+  padding:.9rem 2.2rem;letter-spacing:0;
+}
+.bm-post .bm-cta a.bm-btn:hover{background:var(--white);}
+
+/* caption with a leading solver mark */
+.bm-post figcaption.bm-cap-mark{
+  display:flex;align-items:flex-start;gap:.6rem;
+}
+.bm-post figcaption.bm-cap-mark img{
+  width:auto;height:1.15em;border:0;display:block;
+}
+.bm-post figcaption.bm-cap-mark .bm-cap-marklink{
+  flex:0 0 auto;display:block;margin-top:.12em;
+  text-decoration:none;line-height:0;
+}
+.bm-post figcaption.bm-cap-mark .bm-cap-marklink:hover img{opacity:.7;}
+</style>
+<style>
+/* ── Additions for this post ─────────────────────────────────────── */
+/* body-of-materials / parameter grid: a compact spec block */
+.bm-post .bm-specs{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:0 2.5rem;
+  margin:1.5rem 0;
+}
+.bm-post .bm-spec{
+  display:flex;justify-content:space-between;gap:1rem;
+  padding:.55rem 0;border-bottom:1px solid var(--grey1);
+}
+.bm-post .bm-spec dt{
+  font-family:var(--tech);font-size:.72rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--grey2);margin:0;padding-top:.2rem;
+}
+.bm-post .bm-spec dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;}
+@media (max-width:640px){.bm-post .bm-specs{grid-template-columns:1fr;gap:0;}}
+
+/* a failure note — the things that went wrong, called out as such */
+.bm-post .bm-snag{
+  border-left:4px solid var(--grey1);
+  padding:.1rem 0 .1rem 1.25rem;margin:1.75rem 0;
+}
+.bm-post .bm-snag .bm-snag-head{
+  font-family:var(--tech);font-size:.7rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--grey2);margin:0 0 .5rem;
+}
+.bm-post .bm-snag p:last-child{margin:0;}
+
+/* inline code / solver cards */
+.bm-post code{
+  font-family:var(--tech);font-size:.9em;
+  background:#E4DED9;padding:.1em .35em;
+}
+.bm-post .bm-log code{background:#1a1a1a;color:var(--grey1);}
+.bm-post .bm-log .bm-logline{
+  display:block;background:#1a1a1a;color:var(--grey1);
+  font-family:var(--tech);font-size:.82rem;letter-spacing:.02em;
+  padding:.5rem .7rem;margin:0 0 .3rem;
+  white-space:pre;overflow-x:auto;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Site bar — links back to the main beyondmath.com site ── -->
+<div class="bm-sitebar">
+  <div class="bm-sitebar-inner">
+    <a class="bm-sitebar-logo" href="https://www.beyondmath.com" aria-label="BeyondMath home">
+      <img src="assets/images/beyondmath-logo.webp" alt="BeyondMath" width="900" height="140">
+    </a>
+    <p class="bm-sitebar-tag"><a href="https://blog.beyondmath.com/">Developer Blog</a> · <a href="https://www.beyondmath.com">beyondmath.com</a></p>
+  </div>
+</div>
+
+<article class="bm-post">
+
+  <header class="bm-col">
+    <p class="bm-eyebrow">Physics Factory · Cadgen2 · consumer hardware</p>
+    <h1>Introducing Cadgen2 <span class="bm-o">Design, Generate, and Test at Scale</span></h1>
+    <p class="bm-standfirst">Cadgen2 is the AI-based CAD generation module within BeyondMath’s Physics Factory. It builds production-ready CAD assemblies from user specifications, generates controlled design variants and defeatured geometry, and extracts DOE parameterizations from imported CAD models. This article presents an end-to-end case study: a tablet assembly generated from a text prompt, 50 design variants derived from it, and explicit structural simulation of each variant.</p>
+
+    <p class="bm-meta">BeyondMath · September 2026</p>
+  </header>
+
+  <section class="bm-col">
+    <h2>Current workflow constraints</h2>
+    <p>Engineering-grade CAD production is largely manual. The main costs are:</p>
+    <ul>
+      <li><strong>Synchronisation across multipart assemblies.</strong> A dimensional change must propagate to mating parts, clearances, fastener positions and specification documents. Each propagation path is a potential source of divergence between model and drawing.</li>
+      <li><strong>Constraint compliance.</strong> Wall thickness, clearance, draft, minimum feature size and material allowables are typically enforced through manual design review. Violations are therefore identified late in the programme.</li>
+      <li><strong>Physical evaluation outside the design environment.</strong> CAD systems do not report structural performance or cost during modelling. Evaluation requires export to a separate simulation tool, meshing, solving and post-processing, with a cycle time of days per iteration. Most programmes are consequently limited to a small number of candidate geometries.</li>
+    </ul>
+    <p>Cadgen2 is an AI-driven CAD engine that automates assembly creation, modification and specification, and connects to physics-based evaluation so that variants are generated and assessed within a single workflow. Outputs include per-part specifications, GD&amp;T records, a bill of materials and STEP geometry.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>Capabilities</h2>
+    <ul>
+      <li><strong>Automated design creation.</strong> Generates complete assemblies from a written specification, sketch, reference image or natural-language prompt.</li>
+      <li><strong>Precision design variations.</strong> Applies natural-language instructions to a fully attributed component specification. A change can be scoped to a single dimension on one part or applied across the full assembly.</li>
+      <li><strong>Simulation defeaturing.</strong> Prepares geometry for meshing during generation. Load-bearing features are retained; features that increase element count without contributing to structural response are removed.</li>
+      <li><strong>Physics AI training data generation.</strong> Generates geometry variants across a defined design space, simulates each variant, and formats the results for Physics AI model training.</li>
+      <li><strong>End-to-end workflows.</strong> Connects to Physics Factory for design space definition, dataset consolidation, Physics AI model training and feedback into subsequent design iterations.</li>
+    </ul>
+    <p>Model generation incorporates automated verification to detect and resolve non-physical geometry, specification inconsistencies and constraint violations. All validation checks execute directly on the generated geometry and exported files.</p>
+  </section>
+
+  <hr class="bm-rule bm-col">
+
+  <section class="bm-col">
+    <h2>Creating a geometry</h2>
+    <p class="bm-pull">"Can you create a geometry for a tablet computer, it should be defeatured for simulation, but it should contain all the major components: enclosure, screen, internal electronics, battery and connectors?"</p>
+    <p>From this prompt, Cadgen2 generated a baseline tablet assembly of 20 solid bodies, defeatured for simulation and dimensioned to engineering tolerances. The figure below shows the exploded assembly, the internal layout with measured component envelopes, a mid-width cross-section with layer thicknesses, and the individual defeatured components (bottom row).</p>
+  </section>
+
+  <figure class="bm-wide">
+    <img src="assets/fig1-baseline.webp" alt="Tablet assembly: exploded view of 20 solid bodies, annotated internal layout, mid-width cross-section, and the individual defeatured components" width="1800" height="1014">
+    <figcaption>Baseline assembly: 124.6 × 174.2 × 8.10 mm, 257.0 g, 20 solid bodies. All dimensions are measured from the built geometry.</figcaption>
+  </figure>
+
+  <section class="bm-col">
+    <p>The assembly comprises enclosure, chassis midframe, cover lens, bezel gasket, optical adhesive, display module, lightguide, pouch cell, cell pad, populated circuit board with seven packages, USB-C receptacle, two flat-flex cables and a power key. Each body is a separate solid with its own material card.</p>
+    <p>Dimensions are derived automatically. A single layout model computes all part parameters and mating positions from the variant record, so the multipart assembly stays synchronised when any parameter changes:</p>
+    <ul>
+      <li>The layer stack is closed: enclosure floor, cell pad, cell, board standoffs, board, chassis plate, lightguide, display module, optical adhesive and cover lens sum to the internal height. A 1 mm reduction in overall thickness must be taken from these layers.</li>
+      <li>Cell capacity is computed from total cell volume at a volumetric energy density of 550 Wh/L and a nominal voltage of 3.7 V.</li>
+      <li>The cover lens sits in a recess with 0.15 mm side clearance on a 1.20 mm ledge, inboard of a 0.60 mm rim. For a given external width, enclosure wall thickness therefore limits the display active area.</li>
+      <li>The USB-C receptacle envelope is fixed at 8.94 × 7.25 × 3.16 mm. Below a minimum internal height the receptacle interferes with the chassis plate; generation then raises an error instead of producing an interfering assembly.</li>
+      <li>Board packages are placed with a 1.0 mm minimum pairwise clearance, verified on the built geometry.</li>
+    </ul>
+    <p>Time from prompt to verified geometry, including constraint checks, was under one hour. Outputs are a bill of materials, per-part specifications and STEP files.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>Generating variations</h2>
+    <p class="bm-pull">"Can you generate 5 different variations of size, each with 5 different material thickness of the enclosure and two different materials? Also show me detailed drawings of the thickness changes"</p>
+    <p>From this prompt, Cadgen2 generated five footprint classes × five thickness levels × two enclosure material systems: <strong>50 distinct assemblies</strong>, comprising 1,000 solid bodies and 1,050 STEP files, each with its own specification and BOM. The request is resolved against an attributed component specification, so each thickness change is applied to the named part dimension and propagated through the layout model. No assembly-level scale factor is used.</p>
+  </section>
+
+  <figure class="bm-wide">
+    <img src="assets/fig2-variations.webp" alt="The 50-state variant set: five footprint classes at matched scale, five thickness levels in section, and two enclosure material systems in detail" width="1800" height="1190">
+    <figcaption>Top: five footprint classes rendered at one parallel scale. Middle: the five thickness levels as mid-width sections on a shared z = 0 datum. Bottom: the two enclosure material systems at the rim, and the parameter ranges across the set.</figcaption>
+  </figure>
+
+  <section class="bm-col">
+    <div class="bm-specs">
+      <dl class="bm-spec"><dt>footprint</dt><dd>108.6×157.8 → 196×230 mm</dd></dl>
+      <dl class="bm-spec"><dt>overall thickness</dt><dd>6.40 → 9.20 mm</dd></dl>
+      <dl class="bm-spec"><dt>enclosure wall</dt><dd>0.70 → 1.50 mm</dd></dl>
+      <dl class="bm-spec"><dt>enclosure floor</dt><dd>0.72 → 1.15 mm</dd></dl>
+      <dl class="bm-spec"><dt>chassis plate</dt><dd>0.35 → 1.20 mm</dd></dl>
+      <dl class="bm-spec"><dt>cover lens</dt><dd>0.50 → 0.70 mm</dd></dl>
+      <dl class="bm-spec"><dt>cell capacity</dt><dd>749 → 4,736 mAh</dd></dl>
+      <dl class="bm-spec"><dt>assembled mass</dt><dd>96 → 540 g</dd></dl>
+    </div>
+    <p>The secondary parameters (wall, floor, lens thickness and material, chassis plate thickness and material, board thickness, cell capacity) are assigned using independent Latin-square offsets over the three primary indices, so no secondary parameter is tied to a single axis. In production hardware, wall thickness typically depends on the material system: a die-cast magnesium shell is thinner than a moulded one. Applying that coupling here would make wall thickness and modulus collinear across the set, and their effects could not be separated. On the resulting feature table, the maximum absolute correlation between any two features that are not physically inseparable is <strong>0.46</strong>.</p>
+    <p>Validation on the exported files checked three criteria: each body is a valid solid of the expected volume, no two bodies overlap, and every bonded interface has the specified gap. All 50 variants passed all checks.</p>
+  </section>
+
+  <hr class="bm-rule bm-col">
+
+  <section class="bm-col">
+    <h2>Assessing the variants</h2>
+    <p>Variants can be evaluated for design, cost or physical performance. For structural analysis, the geometry is generated in solver-ready form using the following settings:</p>
+    <ul>
+      <li><strong>Defeaturing.</strong> Non-structural features were removed: threads, logos, textures, vents, solder fillets, BGA balls and connector internals. Load-bearing geometry was retained: enclosure walls and floor, back-edge radii, six screw lands with blind bosses, stiffening ribs, board standoffs, the lens bonding ledge, port openings, and the pouch seal flange.</li>
+
+      <li><strong>Interfaces.</strong> Coincident faces produce ambiguous contact detection, because a node on a shared face is at zero distance from two candidate surfaces. Each bonded interface is therefore modelled with a 0.05 mm gap and closed with a tied contact: 19 per variant, written as solver cards alongside the geometry. On the exported STEP files, all 950 tie gaps measure 0.050 mm to three decimal places.</li>
+      <li><strong>Free clearances.</strong> A single surface-to-surface self-contact with a 0.02 mm minimum gap covers clearances that close under impact: 0.25 mm between cell and chassis (cell swell and board flexure) and 0.15 mm on the lens-to-recess fit. The self-contact minimum gap is set below the 0.05 mm bond gap so that it does not act against the tied contacts on the same faces.</li>
+    </ul>
+    <p>Each variant is meshed with tetrahedra at per-body characteristic lengths from 0.80 mm (shield stamping) to 3.00 mm (cell), and solved in <a target="_blank" href="https://openradioss.org/">OpenRadioss</a> as a 1.0 m drop onto a rigid plane. The reference build mesh has 136,905 nodes and 407,692 elements. The corner-first drop runs 80,000 cycles to 1.491 ms with normal termination, 0.1% energy balance error and zero added mass.</p>
+  </section>
+
+  <figure class="bm-wide">
+    <video class="bm-video" id="bm-drop-video" loop muted playsinline controls preload="metadata" poster="assets/corner-drop-poster.jpg">
+      <source src="assets/corner-drop.mp4" type="video/mp4">
+    </video>
+    <figcaption class="bm-cap-mark"><a class="bm-cap-marklink" href="https://openradioss.org/" target="_blank" rel="noopener noreferrer" aria-label="OpenRadioss"><img src="assets/openradioss-mark.png" alt="OpenRadioss" width="66" height="44"></a><span>1.0 m corner-first drop on the baseline build, solved in OpenRadioss, coloured by von Mises stress with the ceiling at the enclosure material's 75 MPa yield strength. Peak strain energy is 1.45 J of the 2.52 J drop energy, at 0.806 ms.</span></figcaption>
+  </figure>
+
+  <section class="bm-col">
+    <p>Per-frame output (contact and internal forces, von Mises stress, plastic strain, stress and strain tensors) is written in the tensor format used by the training pipeline: 3.8 GB for a single 1.5 ms event.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>Optimising the design</h2>
+    <p>For design selection, the same process runs as a screening campaign. All 50 variants were solved on a coarser mesh of approximately 49,000 nodes, with three concurrent runs on one workstation and 11 h 07 min total solver time. All runs closed the energy balance (median error 0.3%, maximum 1.9%). Peak von Mises stress in the display stack ranges from <strong>130 to 1,781 MPa</strong> across the set, a factor of 13.7.</p>
+  </section>
+
+  <figure class="bm-wide">
+    <video class="bm-video" id="bm-campaign-video" loop muted playsinline controls preload="metadata" poster="assets/design-campaign-poster.jpg">
+      <source src="assets/design-campaign.mp4" type="video/mp4">
+    </video>
+    <figcaption>50 variants of the baseline design, each solved under the same 1.0 m corner drop and ranked by peak display-stack stress. Panel values are measured per design.</figcaption>
+  </figure>
+
+  <section class="bm-col">
+    <p>Single-parameter sweeps do not reproduce this ranking. The lowest-stress variant combines a magnesium enclosure with a wide, short footprint: peak stress is 1,169 MPa in the shell and 130 MPa in the display stack. The highest-stress variant reaches 1,781 MPa in the display module. Within the best-performing quartile, overall thickness is the only parameter confined to a substantially reduced interval (57% of its sampled range). Cell capacity spans 79% and chassis plate thickness 82%; enclosure wall, floor, cover lens, board thickness and both material moduli span their full ranges. Display-stack stress is therefore governed by parameter interactions, which single-variable studies do not capture.</p>
+    <p>Limitations: the material models are linear elastic, so the simulation includes no yielding or load redistribution. Peak values at the impact corner are stress concentrations that increase with mesh refinement. The results are valid for relative ranking on a consistent mesh. They are not valid for absolute failure prediction, and peak values should not be compared directly with ultimate strength.</p>
+    <p>A second case study, real-time modification of imported aerodynamic surfaces on a Formula 1 car, is covered in <a target="_blank" href="../20260919-cadgen2-f1-aero-doe/">the companion post</a>.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>AI-driven CAD design and optimisation</h2>
+    <p>Cadgen2 is a component of the Physics Factory platform. It generates the geometric variation required for physics-based optimisation. These variants are used to train models built on BeyondMath's foundational Physics AI, and the trained models are used to optimise designs against simulated physical response instead of a proxy metric.</p>
+    <p>Variant requirements differ by use case. Design exploration on a released product typically requires a small number of controlled variants with correct specifications and a BOM. A training campaign requires several hundred decorrelated variants with solver decks attached. Both are generated from a parameter table applied to a single layout model. Each variant is stored as a parameter state of a few hundred bytes and rebuilds to identical geometry.</p>
+  </section>
+
+  <!-- ── CTA ── -->
+  <div class="bm-cta">
+    <p class="bm-eyebrow" style="color:var(--orange)">Get access</p>
+    <h2>Generate and simulate design variants</h2>
+    <p>Physics Factory covers geometry generation, simulation and model training on your own data, for structural, CFD, thermal and other physics.</p>
+    <a class="bm-btn" href="https://physicsfactory.beyondmath.com/login#start">Get access</a>
+  </div>
+
+</article>
+
+<!-- ── Site footer — links back to the main beyondmath.com site ── -->
+<div class="bm-sitefoot">
+  <div class="bm-sitefoot-inner">
+    <a class="bm-sitefoot-logo" href="https://www.beyondmath.com" aria-label="BeyondMath home">
+      <img src="assets/images/beyondmath-logo.webp" alt="BeyondMath" width="900" height="140">
+    </a>
+    <p class="bm-sitefoot-meta">© 2026 BeyondMath · <a href="https://www.beyondmath.com">beyondmath.com</a></p>
+  </div>
+</div>
+
+<script>
+// Play each video only while it is on screen; pause when scrolled away.
+(function(){
+  if (!('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) { e.target.play().catch(function(){}); }
+      else { e.target.pause(); }
+    });
+  }, { threshold: 0.35 });
+  ['bm-drop-video','bm-campaign-video'].forEach(function(id){
+    var v = document.getElementById(id);
+    if (v) io.observe(v);
+  });
+})();
+</script>
+
+</body>
+</html>
