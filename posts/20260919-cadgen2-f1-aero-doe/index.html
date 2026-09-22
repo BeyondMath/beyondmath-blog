@@ -447,10 +447,17 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   </section>
 
   <figure class="bm-wide">
-    <video class="bm-video" id="bm-f1-video" loop muted playsinline controls preload="metadata" poster="assets/f1-live-doe-poster.jpg">
-      <source src="assets/f1-live-doe.mp4" type="video/mp4">
+    <video class="bm-video" id="bm-f1-front-video" loop muted playsinline controls preload="metadata" poster="assets/f1-live-doe-poster.jpg">
+      <source src="assets/f1-front-wing-arch.mp4" type="video/mp4">
     </video>
-    <figcaption>Full walkthrough. Each of the 28 handles is swept to the upper limit of its DOE range. Colour shows the displacement of each point as a fraction of that handle's maximum displacement, and per-handle validity metrics are displayed on each frame.</figcaption>
+    <figcaption>Front wing and wheel arch: 16 handles, each swept to the upper limit of its DOE range. Colour shows the displacement of each point as a fraction of that handle's maximum displacement, and per-handle validity metrics are displayed on each frame.</figcaption>
+  </figure>
+
+  <figure class="bm-wide">
+    <video class="bm-video" id="bm-f1-rear-video" loop muted playsinline controls preload="metadata" poster="assets/f1-rear-diffuser-poster.jpg">
+      <source src="assets/f1-rear-diffuser.mp4" type="video/mp4">
+    </video>
+    <figcaption>Rear diffuser and strakes: 12 handles, swept and coloured as above.</figcaption>
   </figure>
 
   <!-- ── Validity ── -->
@@ -522,7 +529,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
       else { e.target.pause(); }
     });
   }, { threshold: 0.35 });
-  ['bm-f1-video'].forEach(function(id){
+  ['bm-f1-front-video','bm-f1-rear-video'].forEach(function(id){
     var v = document.getElementById(id);
     if (v) io.observe(v);
   });
