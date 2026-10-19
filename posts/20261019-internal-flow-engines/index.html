@@ -363,7 +363,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   <header class="bm-col">
     <p class="bm-eyebrow">Physics AI · internal flow · engine intake</p>
     <h1>Predicting intake flow at <span class="bm-o">any valve lift</span></h1>
-    <p class="bm-standfirst">We took four intake designs and ran them through BeyondMath's foundational model of internal flow. You can pick any cylinder, set each intake valve to any lift, and get back the full velocity field along with the usual flow-bench results: flow coefficient, swirl number and pressure drop. Nothing is meshed, and a prediction takes about 15 seconds on a laptop.</p>
+    <p class="bm-standfirst">BeyondMath's foundational AI model of physics predicts the flow through an engine's intake system directly from its geometry, without a mesh or a solver, in about 15 seconds per case on a laptop CPU. This article presents a case study on four intake designs: the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics derived from it, and a comparison with CFD.</p>
     <p class="bm-meta">BeyondMath · October 2026</p>
   </header>
 
@@ -374,6 +374,23 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <figcaption>The four designs, then a cut through cylinder 2 of BMX6. The cut runs along the plane through both intake valves, and the two valves move on separate lift schedules. The colour on the cut face is the predicted velocity; each step of the cycle is its own prediction.</figcaption>
   </figure>
 
+  <section class="bm-col">
+    <h2>The intake flow problem</h2>
+    <p>In a piston engine, air reaches each cylinder through the intake manifold, the intake ports and the intake valves. How much air arrives, and how it moves once inside the cylinder, sets the power the engine can make, its fuel consumption and its emissions. Two quantities summarise it. The flow coefficient measures how freely air passes the valves. The swirl number measures how strongly the charge rotates about the cylinder axis, which governs how well fuel and air mix before combustion. Ports that generate more swirl generally pass less air, so every intake design is a trade between the two.</p>
+    <p>Intake flow is a design concern for engine manufacturers across automotive, commercial vehicle, off-highway, marine and power generation applications. It is set by the port and manifold geometry, and it changes with valve lift, from cylinder to cylinder on the same manifold, and between the two intake valves when they open by different amounts.</p>
+  </section>
+
+  <section class="bm-col">
+    <h2>Current workflow constraints</h2>
+    <p>Intake flow is characterised by physical testing and by simulation. Both are expensive per data point:</p>
+    <ul>
+      <li><strong>Flow bench testing.</strong> A cylinder head is mounted on a steady flow bench, air is drawn through it at a fixed pressure difference, and flow rate and swirl are recorded at a series of fixed valve lifts. Each configuration requires a physical part, and each lift is a separate measurement.</li>
+      <li><strong>CFD.</strong> Each combination of geometry and valve lift is a separate case to mesh, solve and post-process, typically at a cost of hours of compute per case. A study covering every cylinder at every combination of two independently moving valves runs to thousands of cases.</li>
+      <li><strong>Limited coverage.</strong> Programmes are consequently restricted to one representative cylinder, a handful of lifts and both valves moving together. Cylinder-to-cylinder variation and independent valve operation, used for swirl control and valve deactivation, are rarely characterised early in design.</li>
+    </ul>
+    <p>BeyondMath's foundational AI model of physics takes the surface geometry and the boundary conditions and returns the velocity field directly, with no mesh and no solver iterations. The bench metrics are computed from each prediction with the same post-processing used on the CFD results. The rest of this article applies the model to four intake designs, BMX4, BMX6, BMT4 and BMT6, and compares the results with CFD.</p>
+  </section>
+
   <div class="bm-stats bm-wide">
     <p class="bm-stats-head">This post in numbers</p>
     <div class="bm-stat-row bm-four">
@@ -383,13 +400,6 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
       <div class="bm-stat"><p class="bm-stat-value">15 s</p><p class="bm-stat-label">per prediction on a laptop CPU</p></div>
     </div>
   </div>
-
-  <section class="bm-col">
-    <h2>Why intake flow matters</h2>
-    <p>Every piston engine breathes through its intake ports. Air travels down the intake manifold, past a pair of intake valves and into the cylinder, and the way it arrives decides how well the engine burns its fuel. If too little air gets in, the engine loses power. If the air enters without enough swirl, the rotating motion of the charge inside the cylinder, fuel and air mix poorly, and that shows up as higher fuel consumption and emissions.</p>
-    <p>Engine makers design their intake ports to get this balance right, and they test them in two ways. The first is a flow bench, a rig that blows air through the cylinder head at a fixed pressure and measures how much gets through and how strongly it swirls. The second is computational fluid dynamics (CFD), which simulates the same test on a computer. Both are slow. Every valve position on every cylinder is a separate test or a separate simulation, and a single CFD case can take hours to mesh and solve. So most studies cover one cylinder at a handful of valve lifts.</p>
-    <p>BeyondMath builds a foundational AI model of physics. Given a geometry, it predicts the full flow field directly, without building a mesh or running a solver. In this post we put four intake designs through it and show what that changes: the flow at every valve position and in every cylinder, the standard bench numbers that come out of it, and how those numbers compare with CFD. You don't need to be an engine designer to follow it; the videos show what the model sees.</p>
-  </section>
 
   <hr class="bm-rule bm-col">
 
