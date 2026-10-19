@@ -371,7 +371,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <video class="bm-video" loop muted playsinline controls preload="metadata" poster="assets/internal-flow-hero-poster.jpg">
       <source src="assets/internal-flow-hero.mp4" type="video/mp4">
     </video>
-    <figcaption>The four designs, then a cut through cylinder 2 of BMX6. The cut runs along the plane through both intake valves, and the two valves move on separate lift schedules. The colour on the cut face is the predicted velocity; each step of the cycle is its own prediction.</figcaption>
+    <figcaption>The four designs, then a cut through cylinder 2 of BMX6. The cut runs along the plane through both intake valves.</figcaption>
   </figure>
 
   <section class="bm-col">
@@ -385,8 +385,8 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <p>Intake flow is characterised by physical testing and by simulation. Both are expensive per data point:</p>
     <ul>
       <li><strong>Flow bench testing.</strong> A cylinder head is mounted on a steady flow bench, air is drawn through it at a fixed pressure difference, and flow rate and swirl are recorded at a series of fixed valve lifts. Each configuration requires a physical part, and each lift is a separate measurement.</li>
-      <li><strong>CFD.</strong> Each combination of geometry and valve lift is a separate case to mesh, solve and post-process, typically at a cost of hours of compute per case. A study covering every cylinder at every combination of two independently moving valves runs to thousands of cases.</li>
-      <li><strong>Limited coverage.</strong> Programmes are consequently restricted to one representative cylinder, a handful of lifts and both valves moving together. Cylinder-to-cylinder variation and independent valve operation, used for swirl control and valve deactivation, are rarely characterised early in design.</li>
+      <li><strong>CFD.</strong> Each combination of geometry and valve lift is a separate case to mesh, solve and post-process, typically at a cost of hours of compute per case. A study covering every cylinder across the full lift range multiplies that cost by the number of cases.</li>
+      <li><strong>Limited coverage.</strong> Programmes are consequently restricted to a representative cylinder and a handful of valve lifts.</li>
     </ul>
     <p>BeyondMath's foundational AI model of physics takes the surface geometry and the boundary conditions and returns the velocity field directly, with no mesh and no solver iterations. The bench metrics are computed from each prediction with the same post-processing used on the CFD results. The rest of this article applies the model to four intake designs, BMX4, BMX6, BMT4 and BMT6, and compares the results with CFD.</p>
   </section>
@@ -405,8 +405,17 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <section class="bm-col">
     <h2>The four engines</h2>
-    <p>We picked four designs that differ in the ways that matter most for intake flow. Bores range from 88 to 116&nbsp;mm, and there are two four-cylinder and two six-cylinder engines. BMX4 has a plenum with short runners, BMX6 has a long curved runner for each cylinder, and BMT4 and BMT6 use log manifolds fed from opposite ends. On BMX4 the valve pair sits parallel to the bank. On the other three it is rotated across the bank, which changes which valve drives the swirl and which one opposes it.</p>
-    <p>Each design is set up the way it would be on a flow bench, with the inlet, manifold, ports, both intake valves and the bench's porous element in the bore. The model is given the geometry and the boundary conditions and nothing else.</p>
+    <p>The drawing below names the parts of an intake system that the rest of this article refers to, using BMX4 as the example. Air enters at the inlet and collects in the plenum. From there a runner and an intake port carry it to each cylinder, where two intake valves let it in. How far each valve opens is its valve lift. The bore is the diameter of the cylinder, and the bank is the row of cylinders. Together, the inlet, plenum and runners form the intake manifold.</p>
+  </section>
+
+  <figure class="bm-wide">
+    <img src="assets/engine-anatomy.webp" alt="Engineering drawing of the BMX4 intake system: front view, side view and a section through both intake valves of cylinder 1, with the inlet, plenum, runner, intake port, intake valves, valve lift, cylinder, bore and bank labelled" width="1960" height="1722">
+    <figcaption>BMX4 intake system. Section A–A cuts through both intake valves of cylinder 1, the plane used for the flow films later in this article. Valves shown at 9&nbsp;mm lift.</figcaption>
+  </figure>
+
+  <section class="bm-col">
+    <p>We picked four designs that differ in the ways that matter most for intake flow. Bores range from 88 to 116&nbsp;mm, and there are two four-cylinder and two six-cylinder engines. BMX4 has a plenum with short runners, as in the drawing. BMX6 has a long curved runner for each cylinder. BMT4 and BMT6 use log manifolds, a single straight pipe along the bank with a short branch to each port, fed from opposite ends. On BMX4 the two intake valves sit side by side along the bank. On the other three they are turned across it, which changes which valve drives the swirl and which one opposes it.</p>
+    <p>Each design is set up the way it would be on a flow bench, with the inlet, manifold, ports, both intake valves and the porous element the bench places in the cylinder. The model is given the geometry and the boundary conditions and nothing else.</p>
   </section>
 
   <div class="bm-engines bm-wide">
