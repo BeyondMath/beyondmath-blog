@@ -578,18 +578,17 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   </section>
 
   <section class="bm-col">
-    <h2>How it works</h2>
-    <ul>
-      <li>We generate the surface for the requested lifts directly. There is no meshing, healing or remeshing step anywhere in the loop.</li>
-      <li>The model's encoder samples that surface and the fluid volume behind it, with the inlet, outlet and porous regions marked.</li>
-      <li>The decoder can then be queried at any set of points: a section for the films, a 3D grid for the full field, or the bench's measurement planes for the metrics.</li>
-      <li>The metrics go through the same post-processing code we use on the CFD cases, so the comparison above is like for like.</li>
-    </ul>
+    <h2>Predicting the whole engine</h2>
   </section>
 
+  <figure class="bm-wide">
+    <video class="bm-video" loop muted playsinline controls preload="metadata" poster="assets/predicting-the-whole-engine-poster.jpg"
+      aria-label="BMR6 cylinder 2 in the single-cylinder bench set-up: boundary conditions, streamlines from the predicted field, sections down the cylinder and a query-resolution zoom">
+      <source src="assets/predicting-the-whole-engine.mp4" type="video/mp4">
+    </video>
+  </figure>
+
   <section class="bm-col">
-    <h2>Testing the whole engine</h2>
-    <p>Bench time and CFD runs are expensive, so a test campaign usually covers one cylinder, a handful of lifts and both valves moving together. When a full field takes under a minute on a laptop, you can afford to ask more questions. How does cylinder six differ from cylinder one? What does deactivating a valve do to swirl? How do the jets change as the cam turns?</p>
     <p class="bm-fine">BMR4, BMR6, BMT4 and BMT6 are engine designs built for this study, not production engines; the surface finishes in the renders are illustrative. Flow-bench conditions: 100.5&nbsp;kPa at the inlet, 97.0&nbsp;kPa at the outlet, porous element in the bore. Flow coefficient is referenced to seat area; swirl number by the Ricardo method on the plane 1.75 bores below the deck. All fields and metrics are model predictions except the CFD values marked as such. Cylinder 1 of BMR4 and BMR6 was not simulated at 7/7&nbsp;mm; its bars in the per-cylinder chart are the mean of the 6.8/7.2 and 7.2/6.8&nbsp;mm cases. Films are rendered from the predictions with a path tracer; nothing is interpolated between prediction steps, and the encoder's sampling layout is held fixed per cylinder so that differences between steps come from the geometry. Timings were measured on a laptop CPU (Apple M3 Max), with no GPU.</p>
   </section>
 
