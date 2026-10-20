@@ -589,14 +589,14 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   </figure>
 
   <section class="bm-col">
-    <p class="bm-fine">BMR4, BMR6, BMT4 and BMT6 are engine designs built for this study, not production engines; the surface finishes in the renders are illustrative. Flow-bench conditions: 100.5&nbsp;kPa at the inlet, 97.0&nbsp;kPa at the outlet, porous element in the bore. Flow coefficient is referenced to seat area; swirl number by the Ricardo method on the plane 1.75 bores below the deck. All fields and metrics are model predictions except the CFD values marked as such. Cylinder 1 of BMR4 and BMR6 was not simulated at 7/7&nbsp;mm; its bars in the per-cylinder chart are the mean of the 6.8/7.2 and 7.2/6.8&nbsp;mm cases. Films are rendered from the predictions with a path tracer; nothing is interpolated between prediction steps, and the encoder's sampling layout is held fixed per cylinder so that differences between steps come from the geometry. Timings were measured on a laptop CPU (Apple M3 Max), with no GPU.</p>
+    <p>The film shows the model's prediction for cylinder 2 of BMR6, with both valves at 7&nbsp;mm. After the boundary conditions, streamlines trace the air from the inlet through the plenum and runner into the cylinder, where it swirls until the porous element straightens it. Sections then step down the cylinder, and one plane is queried at finer and finer spacing to resolve the edge of a valve jet. The film ends with the full 3D velocity field.</p>
   </section>
 
   <!-- ── CTA ── -->
   <div class="bm-cta">
     <p class="bm-eyebrow" style="color:var(--orange)">Get in touch</p>
     <h2>Design the undiscovered</h2>
-    <p>On your own programme, the model runs on your heads and manifolds, is trained against your data and stays inside your firewall.</p>
+    <p>The model can be trained on your own heads and manifolds using your own CFD data, and it runs inside your firewall.</p>
     <a class="bm-btn" href="https://www.beyondmath.com">Talk to us</a>
   </div>
 
