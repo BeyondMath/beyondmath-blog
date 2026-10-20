@@ -363,7 +363,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   <header class="bm-col">
     <p class="bm-eyebrow">Physics AI · internal flow · engine intake</p>
     <h1>Predicting intake flow at <span class="bm-o">any valve lift</span></h1>
-    <p class="bm-standfirst">BeyondMath's foundational AI model of physics predicts the flow through an engine's intake system directly from its geometry, without a mesh or a solver, in about 15 seconds per case on a laptop CPU. This article presents a case study on four intake designs: the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics derived from it, and a comparison with CFD.</p>
+    <p class="bm-standfirst">BeyondMath's foundational AI model of physics predicts the flow through an engine's intake system directly from its geometry. It needs no mesh and no solver, and each case takes about 15 seconds on a laptop CPU. This article applies the model to four intake designs and shows the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics, and a comparison with CFD.</p>
     <p class="bm-meta">BeyondMath · October 2026</p>
   </header>
 
@@ -371,24 +371,24 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <video class="bm-video" loop muted playsinline controls preload="metadata" poster="assets/internal-flow-hero-poster.jpg">
       <source src="assets/internal-flow-hero.mp4" type="video/mp4">
     </video>
-    <figcaption>The four designs, then a cut through cylinder 2 of BMX6. The cut runs along the plane through both intake valves.</figcaption>
+    <figcaption>The four designs, then a cut through cylinder 2 of BMR6. The cut runs along the plane through both intake valves.</figcaption>
   </figure>
 
   <section class="bm-col">
     <h2>The intake flow problem</h2>
-    <p>In a piston engine, air reaches each cylinder through the intake manifold, the intake ports and the intake valves. How much air arrives, and how it moves once inside the cylinder, sets the power the engine can make, its fuel consumption and its emissions. Two quantities summarise it. The flow coefficient measures how freely air passes the valves. The swirl number measures how strongly the charge rotates about the cylinder axis, which governs how well fuel and air mix before combustion. Ports that generate more swirl generally pass less air, so every intake design is a trade between the two.</p>
-    <p>Intake flow is a design concern for engine manufacturers across automotive, commercial vehicle, off-highway, marine and power generation applications. It is set by the port and manifold geometry, and it changes with valve lift, from cylinder to cylinder on the same manifold, and between the two intake valves when they open by different amounts.</p>
+    <p>A piston engine draws air into each cylinder through the intake manifold, the intake ports and the intake valves. The amount of air and the way it moves inside the cylinder determine the engine's power, fuel consumption and emissions. Engineers describe intake flow with two numbers. The flow coefficient measures how freely air passes the valves. The swirl number measures how strongly the air rotates about the cylinder axis, which governs how well fuel and air mix before combustion. Every intake design is a trade-off between generating more swirl and passing enough air.</p>
+    <p>Engine manufacturers in automotive, commercial vehicle, off-highway, marine and power generation all have to design for intake flow. The port and manifold geometry determine it. It changes with valve lift, from one cylinder to the next on the same manifold, and between the two intake valves when they open by different amounts.</p>
   </section>
 
   <section class="bm-col">
     <h2>Current workflow constraints</h2>
-    <p>Intake flow is characterised by physical testing and by simulation. Both are expensive per data point:</p>
+    <p>Engineers measure intake flow on a flow bench or simulate it with CFD. Both are expensive for each data point.</p>
     <ul>
-      <li><strong>Flow bench testing.</strong> A cylinder head is mounted on a steady flow bench, air is drawn through it at a fixed pressure difference, and flow rate and swirl are recorded at a series of fixed valve lifts. Each configuration requires a physical part, and each lift is a separate measurement.</li>
-      <li><strong>CFD.</strong> Each combination of geometry and valve lift is a separate case to mesh, solve and post-process, typically at a cost of hours of compute per case. A study covering every cylinder across the full lift range multiplies that cost by the number of cases.</li>
-      <li><strong>Limited coverage.</strong> Programmes are consequently restricted to a representative cylinder and a handful of valve lifts.</li>
+      <li><strong>Flow bench testing.</strong> A flow bench draws air through a cylinder head at a fixed pressure difference and records the flow rate and swirl at a series of fixed valve lifts. Each configuration needs a physical part, and each lift is a separate measurement.</li>
+      <li><strong>CFD.</strong> Each combination of geometry and valve lift is a separate case that has to be meshed, solved and post-processed, which typically takes hours of compute. Covering every cylinder across the full lift range multiplies that cost by the number of cases.</li>
+      <li><strong>Limited coverage.</strong> Most programmes therefore test one representative cylinder at a handful of valve lifts.</li>
     </ul>
-    <p>BeyondMath's foundational AI model of physics takes the surface geometry and the boundary conditions and returns the velocity field directly, with no mesh and no solver iterations. The bench metrics are computed from each prediction with the same post-processing used on the CFD results. The rest of this article applies the model to four intake designs, BMX4, BMX6, BMT4 and BMT6, and compares the results with CFD.</p>
+    <p>BeyondMath's foundational AI model of physics returns the velocity field directly from the surface geometry and the boundary conditions, with no mesh and no solver iterations. We compute the bench metrics from each prediction with the same post-processing we use on the CFD results. The rest of this article applies the model to four intake designs, BMR4, BMR6, BMT4 and BMT6, and compares the results with CFD.</p>
   </section>
 
   <div class="bm-stats bm-wide">
@@ -405,26 +405,26 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <section class="bm-col">
     <h2>The four engines</h2>
-    <p>The drawing below names the parts of an intake system that the rest of this article refers to, using BMX4 as the example. Air enters at the inlet and collects in the plenum. From there a runner and an intake port carry it to each cylinder, where two intake valves let it in. How far each valve opens is its valve lift. The bore is the diameter of the cylinder, and the bank is the row of cylinders. Together, the inlet, plenum and runners form the intake manifold.</p>
+    <p>The drawing below labels the parts of an intake system that this article refers to, using BMR4 as the example. Air enters at the inlet and collects in the plenum. A runner and an intake port then carry it to each cylinder, and two intake valves let it in. The valve lift is the distance each valve opens. The bore is the cylinder diameter, and the bank is the row of cylinders. The inlet, plenum and runners together form the intake manifold.</p>
   </section>
 
   <figure class="bm-wide">
-    <img src="assets/engine-anatomy.webp" alt="Engineering drawing of the BMX4 intake system: front view, side view and a section through both intake valves of cylinder 1, with the inlet, plenum, runner, intake port, intake valves, valve lift, cylinder, bore and bank labelled" width="1960" height="1722">
-    <figcaption>BMX4 intake system. Section A–A cuts through both intake valves of cylinder 1, the plane used for the flow films later in this article. Valves shown at 9&nbsp;mm lift.</figcaption>
+    <img src="assets/engine-anatomy.webp" alt="Engineering drawing of the BMR4 intake system: front view, side view and a section through both intake valves of cylinder 1, with the inlet, plenum, runner, intake port, intake valves, valve lift, cylinder, bore and bank labelled" width="1960" height="1722">
+    <figcaption>BMR4 intake system. Section A–A cuts through both intake valves of cylinder 1, which is the plane used for the flow films later in this article. Both valves are at 9&nbsp;mm lift.</figcaption>
   </figure>
 
   <section class="bm-col">
-    <p>We picked four designs that differ in the ways that matter most for intake flow. Bores range from 88 to 116&nbsp;mm, and there are two four-cylinder and two six-cylinder engines. BMX4 has a plenum with short runners, as in the drawing. BMX6 has a long curved runner for each cylinder. BMT4 and BMT6 use log manifolds, a single straight pipe along the bank with a short branch to each port, fed from opposite ends. On BMX4 the two intake valves sit side by side along the bank. On the other three they are turned across it, which changes which valve drives the swirl and which one opposes it.</p>
-    <p>Each design is set up the way it would be on a flow bench, with the inlet, manifold, ports, both intake valves and the porous element the bench places in the cylinder. The model is given the geometry and the boundary conditions and nothing else.</p>
+    <p>We picked four designs that differ in the ways that matter most for intake flow. Bores range from 88 to 116&nbsp;mm, and there are two four-cylinder and two six-cylinder engines. BMR4 has a plenum with short runners, as in the drawing. BMR6 has a long curved runner for each cylinder. BMT4 and BMT6 use log manifolds, which are single straight pipes along the bank with a short branch to each port, fed from opposite ends. BMR4's two intake valves sit side by side along the bank. The other three engines have their valves turned across the bank, which changes which valve drives the swirl and which one opposes it.</p>
+    <p>We set up each design the way it would be on a flow bench, with the inlet, manifold, ports, both intake valves and the porous element the bench places in the cylinder. The model receives only the geometry and the boundary conditions.</p>
   </section>
 
   <div class="bm-engines bm-wide">
       <div class="bm-engine">
-        <video class="bm-video" loop muted playsinline preload="metadata" poster="assets/turn-bmx4-poster.jpg"
-          aria-label="BMX4 intake system, rotating 360 degrees">
-          <source src="assets/turn-bmx4.mp4" type="video/mp4">
+        <video class="bm-video" loop muted playsinline preload="metadata" poster="assets/turn-bmr4-poster.jpg"
+          aria-label="BMR4 intake system, rotating 360 degrees">
+          <source src="assets/turn-bmr4.mp4" type="video/mp4">
         </video>
-        <h3>BMX4</h3>
+        <h3>BMR4</h3>
         <dl class="bm-specs">
           <div class="bm-spec"><dt>Cylinders</dt><dd>4</dd></div>
           <div class="bm-spec"><dt>Bore</dt><dd>88 mm</dd></div>
@@ -436,11 +436,11 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
         <p>Plenum with short runners and a top-entry inlet bend. Valve pair parallel to the bank.</p>
       </div>
       <div class="bm-engine">
-        <video class="bm-video" loop muted playsinline preload="metadata" poster="assets/turn-bmx6-poster.jpg"
-          aria-label="BMX6 intake system, rotating 360 degrees">
-          <source src="assets/turn-bmx6.mp4" type="video/mp4">
+        <video class="bm-video" loop muted playsinline preload="metadata" poster="assets/turn-bmr6-poster.jpg"
+          aria-label="BMR6 intake system, rotating 360 degrees">
+          <source src="assets/turn-bmr6.mp4" type="video/mp4">
         </video>
-        <h3>BMX6</h3>
+        <h3>BMR6</h3>
         <dl class="bm-specs">
           <div class="bm-spec"><dt>Cylinders</dt><dd>6</dd></div>
           <div class="bm-spec"><dt>Bore</dt><dd>116 mm</dd></div>
@@ -500,7 +500,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <video class="bm-video" loop muted playsinline controls preload="metadata" poster="assets/valves-in-motion-poster.jpg">
       <source src="assets/valves-in-motion.mp4" type="video/mp4">
     </video>
-    <figcaption>BMX6, BMT4 and BMT6, cylinder 2, 144 predictions. Each engine gets one lift cycle in a medium shot and two in close-up. The gauges show the lift of valve A and valve B in the current frame.</figcaption>
+    <figcaption>BMR6, BMT4 and BMT6, cylinder 2, 144 predictions. Each engine gets one lift cycle in a medium shot and two in close-up. The gauges show the lift of valve A and valve B in the current frame.</figcaption>
   </figure>
 
   <section class="bm-col">
@@ -513,43 +513,43 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <video class="bm-video" loop muted playsinline controls preload="metadata" poster="assets/fine-steps-poster.jpg">
       <source src="assets/fine-steps.mp4" type="video/mp4">
     </video>
-    <figcaption>BMX6, cylinder 2, valve A from 5.0 to 9.0&nbsp;mm and back, 41 predictions. The camera is close in on the valve A seat, and the readout shows the lift in the current frame.</figcaption>
+    <figcaption>BMR6, cylinder 2, valve A from 5.0 to 9.0&nbsp;mm and back, 41 predictions. The camera is close in on the valve A seat, and the readout shows the lift in the current frame.</figcaption>
   </figure>
 
   <section class="bm-col">
     <h2>Differences between cylinders</h2>
-    <p>Cylinders on the same manifold don't breathe the same way. Runner length, the angle at which each branch leaves the plenum and its distance from the inlet all affect the flow at the valve seat, and the differences tend to appear in swirl before they appear in flow coefficient. Because the model sees each cylinder in place on its manifold, it picks these differences up. In the film below we open up BMX4 one cylinder at a time.</p>
+    <p>Cylinders on the same manifold don't breathe the same way. Runner length, the angle at which each branch leaves the plenum and its distance from the inlet all affect the flow at the valve seat, and the differences tend to appear in swirl before they appear in flow coefficient. Because the model sees each cylinder in place on its manifold, it picks these differences up. In the film below we open up BMR4 one cylinder at a time.</p>
   </section>
 
   <figure class="bm-wide">
     <video class="bm-video" loop muted playsinline controls preload="metadata" poster="assets/cylinder-by-cylinder-poster.jpg">
       <source src="assets/cylinder-by-cylinder.mp4" type="video/mp4">
     </video>
-    <figcaption>BMX4, cylinders 1 to 4, 144 predictions. Each cylinder runs its own valve schedule. As on the bench, the ports of the other cylinders are capped.</figcaption>
+    <figcaption>BMR4, cylinders 1 to 4, 144 predictions. Each cylinder runs its own valve schedule. As on the bench, the ports of the other cylinders are capped.</figcaption>
   </figure>
 
   <figure class="bm-wide">
     <img class="bm-chart" src="assets/chart-percyl.svg" alt="CFD flow coefficient and swirl number for every cylinder of the four engines, both valves at 7 mm lift">
-    <figcaption>CFD, every cylinder, both valves at 7&nbsp;mm. Flow coefficient barely changes from cylinder to cylinder; swirl can differ by a factor of two on the same manifold. Cylinder 1 of BMX4 and BMX6 shows the mean of the nearest simulated cases (6.8/7.2 and 7.2/6.8&nbsp;mm), with their range.</figcaption>
+    <figcaption>CFD results for every cylinder with both valves at 7&nbsp;mm. The flow coefficient barely changes between cylinders, but the swirl number can differ by a factor of two on the same manifold. Cylinder 1 of BMR4 and BMR6 shows the mean and range of the two nearest cases (6.8/7.2 and 7.2/6.8&nbsp;mm).</figcaption>
   </figure>
 
   <section class="bm-col">
     <h2>The bench report</h2>
-    <p>Any prediction can be turned into a one-page report laid out the way a flow lab would lay it out. It gives the standard flow-bench results and two sections through the predicted flow. The results are:</p>
+    <p>The platform turns any prediction into a one-page report in the layout a flow lab uses. The report gives six standard flow-bench results and two sections through the predicted flow.</p>
     <ul>
-      <li><strong>Mass flow</strong> (kg/s): how much air passes through the port into the cylinder each second.</li>
-      <li><strong>Pressure drop, dP</strong> (Pa): the difference in pressure between the inlet and the measurement plane in the cylinder. This is what drives the flow.</li>
-      <li><strong>Isentropic velocity, V0s</strong> (m/s): the speed the air would reach if all of that pressure drop turned into speed with no losses. It is the reference speed for the two numbers below.</li>
-      <li><strong>Flow coefficient, Cf</strong>: the actual mass flow divided by the flow an ideal, loss-free opening the size of the valve seats would pass at the same pressure drop. Higher means the port breathes more freely. The four designs here sit between 0.37 and 0.50 with both valves at 7&nbsp;mm.</li>
-      <li><strong>Angular momentum flux</strong> (N·m): how much rotation the air carries through the swirl plane, a plane across the cylinder below the valves.</li>
-      <li><strong>Swirl number, Nr</strong>: the angular momentum flux made independent of engine size and flow rate (Ricardo method). It measures how strongly the air rotates about the cylinder axis, and its sign gives the direction.</li>
+      <li><strong>Mass flow</strong> (kg/s) is the mass of air that passes through the port into the cylinder each second.</li>
+      <li><strong>Pressure drop, dP</strong> (Pa) is the pressure difference between the inlet and the measurement plane in the cylinder. It drives the flow.</li>
+      <li><strong>Isentropic velocity, V0s</strong> (m/s) is the speed the air would reach if the whole pressure drop turned into speed with no losses. The flow coefficient and the swirl number use it as their reference speed.</li>
+      <li><strong>Flow coefficient, Cf</strong> is the actual mass flow divided by the flow that an ideal, loss-free opening the size of the valve seats would pass at the same pressure drop. A higher value means the port passes air more freely. The four designs here range from 0.37 to 0.50 with both valves at 7&nbsp;mm.</li>
+      <li><strong>Angular momentum flux</strong> (N·m) is the rotation the air carries through the swirl plane, which lies across the cylinder below the valves.</li>
+      <li><strong>Swirl number, Nr</strong> is the angular momentum flux normalised by the mass flow, the bore and the isentropic velocity (Ricardo method). It measures how strongly the air rotates about the cylinder axis, and its sign gives the direction of rotation.</li>
     </ul>
-    <p>The left-hand section is the velocity on a vertical plane through the cylinder. The right-hand one is the velocity across the swirl plane, where the rotation is measured. If you change the cylinder, a valve lift or the geometry, the report is rebuilt from a new prediction.</p>
+    <p>The left-hand section shows the velocity on a vertical plane through the cylinder, and the right-hand section shows the velocity across the swirl plane. The platform rebuilds the report from a new prediction whenever the cylinder, a valve lift or the geometry changes.</p>
   </section>
 
   <figure class="bm-wide">
-    <img src="assets/report.jpg" alt="One-page flow-bench report for BMX6 cylinder 5 at valve lifts 6.55 and 4.02 mm">
-    <figcaption>BMX6, cylinder 5, valve A 6.55&nbsp;mm and valve B 4.02&nbsp;mm, generated by the platform from one prediction.</figcaption>
+    <img src="assets/report.jpg" alt="One-page flow-bench report for BMR6 cylinder 5 at valve lifts 6.55 and 4.02 mm">
+    <figcaption>BMR6, cylinder 5, valve A 6.55&nbsp;mm and valve B 4.02&nbsp;mm, generated by the platform from one prediction.</figcaption>
   </figure>
 
   <section class="bm-col">
@@ -574,7 +574,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <section class="bm-col">
     <div class="bm-snag">
-      <p class="bm-snag-head">One caveat</p>
+      <p class="bm-snag-head">Training data</p>
       <p>The model was trained on these sweeps, apart from 5 cases we held out for validation. So this chart shows how closely it reproduces its training data across every engine and cylinder. It is not a blind test. On the 5 held-out cases the mean absolute errors are 0.022 in flow coefficient, 0.021 in swirl number and 54&nbsp;Pa in pressure drop. We measure accuracy on new geometry with designs held out entirely, and every prediction the platform makes comes with a confidence score.</p>
     </div>
   </section>
@@ -592,12 +592,12 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   <section class="bm-col">
     <h2>Testing the whole engine</h2>
     <p>Bench time and CFD runs are expensive, so a test campaign usually covers one cylinder, a handful of lifts and both valves moving together. When a full field takes under a minute on a laptop, you can afford to ask more questions. How does cylinder six differ from cylinder one? What does deactivating a valve do to swirl? How do the jets change as the cam turns?</p>
-    <p class="bm-fine">BMX4, BMX6, BMT4 and BMT6 are engine designs built for this study, not production engines; the surface finishes in the renders are illustrative. Flow-bench conditions: 100.5&nbsp;kPa at the inlet, 97.0&nbsp;kPa at the outlet, porous element in the bore. Flow coefficient is referenced to seat area; swirl number by the Ricardo method on the plane 1.75 bores below the deck. All fields and metrics are model predictions except the CFD values marked as such. Films are rendered from the predictions with a path tracer; nothing is interpolated between prediction steps, and the encoder's sampling layout is held fixed per cylinder so that differences between steps come from the geometry. Timings were measured on a laptop CPU (Apple M3 Max), with no GPU.</p>
+    <p class="bm-fine">BMR4, BMR6, BMT4 and BMT6 are engine designs built for this study, not production engines; the surface finishes in the renders are illustrative. Flow-bench conditions: 100.5&nbsp;kPa at the inlet, 97.0&nbsp;kPa at the outlet, porous element in the bore. Flow coefficient is referenced to seat area; swirl number by the Ricardo method on the plane 1.75 bores below the deck. All fields and metrics are model predictions except the CFD values marked as such. Films are rendered from the predictions with a path tracer; nothing is interpolated between prediction steps, and the encoder's sampling layout is held fixed per cylinder so that differences between steps come from the geometry. Timings were measured on a laptop CPU (Apple M3 Max), with no GPU.</p>
   </section>
 
   <!-- ── CTA ── -->
   <div class="bm-cta">
-    <p class="bm-eyebrow" style="color:var(--orange)">Your engines</p>
+    <p class="bm-eyebrow" style="color:var(--orange)">Get in touch</p>
     <h2>Design the undiscovered</h2>
     <p>On your own programme, the model runs on your heads and manifolds, is trained against your data and stays inside your firewall.</p>
     <a class="bm-btn" href="https://www.beyondmath.com">Talk to us</a>
