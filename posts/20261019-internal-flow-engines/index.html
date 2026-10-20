@@ -548,8 +548,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <section class="bm-col">
     <h2>Comparison with CFD</h2>
-    <p>We computed the same metrics in the same way from the model's prediction and from the CFD solution, for every simulated case of the four designs. Both use the same planes, the same seat area and the same Ricardo method. The only difference is where the velocity field came from.</p>
-    <p>Across 264 cases the model's flow coefficient is within 0.011 of the CFD value on average, its swirl number within 0.008, and its pressure drop within 1.6%.</p>
+    <p>We computed the same metrics in the same way from the model's prediction and from the CFD solution, using the same planes, the same seat area and the same Ricardo method. Of the 264 cases in the chart below, 259 were used in training and 5 were held out. Across all 264 cases the model's flow coefficient is within 0.011 of CFD on average, its swirl number within 0.008 and its pressure drop within 1.6%. On the 5 held-out cases the mean absolute errors are 0.022 in flow coefficient, 0.021 in swirl number and 54&nbsp;Pa in pressure drop.</p>
   </section>
 
   <div class="bm-stats bm-wide">
@@ -565,13 +564,6 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
     <img class="bm-chart" src="assets/chart-parity.svg" alt="Model against CFD for flow coefficient, swirl number and pressure drop across 264 cases">
     <figcaption>Model against CFD, 264 cases. Each point is one cylinder at one pair of lifts. Circled points were held out of training.</figcaption>
   </figure>
-
-  <section class="bm-col">
-    <div class="bm-snag">
-      <p class="bm-snag-head">Training data</p>
-      <p>The model was trained on these sweeps, with 5 cases held out for validation. On those 5 cases the mean absolute errors are 0.022 in flow coefficient, 0.021 in swirl number and 54&nbsp;Pa in pressure drop.</p>
-    </div>
-  </section>
 
   <section class="bm-col">
     <h2>Predicting the whole engine</h2>
