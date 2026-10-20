@@ -527,7 +527,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <figure class="bm-wide">
     <img class="bm-chart" src="assets/chart-percyl.svg" alt="CFD flow coefficient and swirl number for every cylinder of the four engines, both valves at 7 mm lift">
-    <figcaption>CFD results for every cylinder with both valves at 7&nbsp;mm. The flow coefficient barely changes between cylinders, but the swirl number can differ by a factor of two on the same manifold. Cylinder 1 of BMR4 and BMR6 shows the mean and range of the two nearest cases (6.8/7.2 and 7.2/6.8&nbsp;mm).</figcaption>
+    <figcaption>CFD results for every cylinder with both valves at 7&nbsp;mm. The flow coefficient barely changes between cylinders, but the swirl number can differ by a factor of two on the same manifold.</figcaption>
   </figure>
 
   <section class="bm-col">
@@ -589,7 +589,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   <section class="bm-col">
     <h2>Testing the whole engine</h2>
     <p>Bench time and CFD runs are expensive, so a test campaign usually covers one cylinder, a handful of lifts and both valves moving together. When a full field takes under a minute on a laptop, you can afford to ask more questions. How does cylinder six differ from cylinder one? What does deactivating a valve do to swirl? How do the jets change as the cam turns?</p>
-    <p class="bm-fine">BMR4, BMR6, BMT4 and BMT6 are engine designs built for this study, not production engines; the surface finishes in the renders are illustrative. Flow-bench conditions: 100.5&nbsp;kPa at the inlet, 97.0&nbsp;kPa at the outlet, porous element in the bore. Flow coefficient is referenced to seat area; swirl number by the Ricardo method on the plane 1.75 bores below the deck. All fields and metrics are model predictions except the CFD values marked as such. Films are rendered from the predictions with a path tracer; nothing is interpolated between prediction steps, and the encoder's sampling layout is held fixed per cylinder so that differences between steps come from the geometry. Timings were measured on a laptop CPU (Apple M3 Max), with no GPU.</p>
+    <p class="bm-fine">BMR4, BMR6, BMT4 and BMT6 are engine designs built for this study, not production engines; the surface finishes in the renders are illustrative. Flow-bench conditions: 100.5&nbsp;kPa at the inlet, 97.0&nbsp;kPa at the outlet, porous element in the bore. Flow coefficient is referenced to seat area; swirl number by the Ricardo method on the plane 1.75 bores below the deck. All fields and metrics are model predictions except the CFD values marked as such. Cylinder 1 of BMR4 and BMR6 was not simulated at 7/7&nbsp;mm; its bars in the per-cylinder chart are the mean of the 6.8/7.2 and 7.2/6.8&nbsp;mm cases. Films are rendered from the predictions with a path tracer; nothing is interpolated between prediction steps, and the encoder's sampling layout is held fixed per cylinder so that differences between steps come from the geometry. Timings were measured on a laptop CPU (Apple M3 Max), with no GPU.</p>
   </section>
 
   <!-- ── CTA ── -->
