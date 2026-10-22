@@ -364,7 +364,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   <header class="bm-col">
     <p class="bm-eyebrow">Physics AI · internal flow · engine intake</p>
     <h1>Teaching Physics AI a New Engine Class <span class="bm-o">in a Single Shot</span></h1>
-    <p class="bm-standfirst">BeyondMath's foundational AI model of physics learns an entire new engine class from a single simulation, then predicts the flow through its intake system at any combination of valve lifts, directly from the geometry. It needs no mesh and no solver, and each case takes about 15 seconds on a laptop CPU. This article applies the model to four intake designs and shows the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics, and a comparison with CFD.</p>
+    <p class="bm-standfirst">BeyondMath's foundational AI model of physics learns an entire new engine class from one simulation, then predicts the flow through its intake system at any combination of valve lifts, directly from the geometry. It needs no mesh and no solver, and each case takes about 15 seconds on a laptop CPU. This article applies the model to four intake designs and shows the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics, and a comparison with CFD.</p>
     <p class="bm-meta">BeyondMath · October 2026</p>
   </header>
 
@@ -547,8 +547,8 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   </figure>
 
   <section class="bm-col">
-    <h2>One sim is enough to learn an entire new engine class</h2>
-    <p>We fine-tuned BeyondMath's foundational model on a single simulation from each of the four engines: cylinder 2 with both intake valves at 7&nbsp;mm. Every other point in the chart below is a model prediction. We computed the same metrics in the same way from the model's prediction and from the CFD solution, using the same planes, the same seat area and the same Ricardo method. Across all 264 cases the model's flow coefficient is within 0.011 of CFD on average, its swirl number within 0.008 and its pressure drop within 1.6%.</p>
+    <h2>One simulation is enough to learn an entire new engine class</h2>
+    <p>We fine-tuned BeyondMath's foundational model on one simulation from each of the four engines: cylinder 2 with both intake valves at 7&nbsp;mm. Every other point in the chart below is a model prediction. We computed the same metrics in the same way from the model's prediction and from the CFD solution, using the same planes, the same seat area and the same Ricardo method. Across all 264 cases the model's flow coefficient is within 0.011 of CFD on average, its swirl number within 0.008 and its pressure drop within 1.6%.</p>
   </section>
 
   <div class="bm-stats bm-wide">
