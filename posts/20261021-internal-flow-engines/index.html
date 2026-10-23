@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Teaching Physics AI a New Engine Class in a Single Shot — BeyondMath</title>
+<title>Predicting Intake Flow at Any Valve Lift — BeyondMath</title>
 <meta name="description" content="Four engine intake designs put through BeyondMath's foundational model of internal flow: the full velocity field at any valve lift and in any cylinder, with flow coefficient and swirl checked against CFD.">
 <meta name="author" content="BeyondMath">
 <meta name="robots" content="index, follow">
@@ -13,7 +13,7 @@
 <!-- Open Graph / Facebook / LinkedIn -->
 <meta property="og:type" content="article">
 <meta property="og:site_name" content="BeyondMath">
-<meta property="og:title" content="Teaching Physics AI a New Engine Class in a Single Shot">
+<meta property="og:title" content="Predicting Intake Flow at Any Valve Lift">
 <meta property="og:description" content="Four engine intake designs put through BeyondMath's foundational model of internal flow: the full velocity field at any valve lift and in any cylinder, with flow coefficient and swirl checked against CFD.">
 <meta property="og:url" content="https://blog.beyondmath.com/posts/20261021-internal-flow-engines/">
 <meta property="og:image" content="https://blog.beyondmath.com/posts/20261021-internal-flow-engines/assets/og-share-image.webp">
@@ -25,7 +25,7 @@
 
 <!-- Twitter / X -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Teaching Physics AI a New Engine Class in a Single Shot">
+<meta name="twitter:title" content="Predicting Intake Flow at Any Valve Lift">
 <meta name="twitter:description" content="Four engine intake designs put through BeyondMath's foundational model of internal flow: the full velocity field at any valve lift and in any cylinder, with flow coefficient and swirl checked against CFD.">
 <meta name="twitter:image" content="https://blog.beyondmath.com/posts/20261021-internal-flow-engines/assets/og-share-image.webp">
 
@@ -37,7 +37,7 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "Teaching Physics AI a New Engine Class in a Single Shot",
+  "headline": "Predicting Intake Flow at Any Valve Lift",
   "description": "Four engine intake designs put through BeyondMath's foundational model of internal flow: the full velocity field at any valve lift and in any cylinder, with flow coefficient and swirl checked against CFD.",
   "image": "https://blog.beyondmath.com/posts/20261021-internal-flow-engines/assets/og-share-image.webp",
   "url": "https://blog.beyondmath.com/posts/20261021-internal-flow-engines/",
@@ -363,8 +363,8 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <header class="bm-col">
     <p class="bm-eyebrow">Physics AI · internal flow · engine intake</p>
-    <h1>Teaching Physics AI a New Engine Class <span class="bm-o">in a Single Shot</span></h1>
-    <p class="bm-standfirst">BeyondMath's foundational AI model of physics learns an entire new engine class from one simulation, then predicts the flow through its intake system at any combination of valve lifts, directly from the geometry. It needs no mesh and no solver, and each case takes about 15 seconds on a laptop CPU. This article applies the model to four intake designs and shows the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics, and a comparison with CFD.</p>
+    <h1>Predicting intake flow at <span class="bm-o">any valve lift</span></h1>
+    <p class="bm-standfirst">BeyondMath's foundational AI model of physics predicts the flow through an engine's intake system directly from its geometry. It needs no mesh and no solver, and each case takes about 15 seconds on a laptop CPU. This article applies the model to four intake designs and shows the velocity field at any combination of valve lifts in any cylinder, the standard flow-bench metrics, and a comparison with CFD.</p>
     <p class="bm-meta">BeyondMath · October 2026</p>
   </header>
 
@@ -547,8 +547,8 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
   </figure>
 
   <section class="bm-col">
-    <h2>One simulation is enough to learn an entire new engine class</h2>
-    <p>We fine-tuned BeyondMath's foundational model on one simulation from each of the four engines: cylinder 2 with both intake valves at 7&nbsp;mm. Every other point in the chart below is a model prediction. We computed the same metrics in the same way from the model's prediction and from the CFD solution, using the same planes, the same seat area and the same Ricardo method. Across all 264 cases the model's flow coefficient is within 0.011 of CFD on average, its swirl number within 0.008 and its pressure drop within 1.6%.</p>
+    <h2>Comparison with CFD</h2>
+    <p>We computed the same metrics in the same way from the model's prediction and from the CFD solution, using the same planes, the same seat area and the same Ricardo method. Of the 264 cases in the chart below, 259 were used in training and 5 were held out. Across all 264 cases the model's flow coefficient is within 0.011 of CFD on average, its swirl number within 0.008 and its pressure drop within 1.6%. On the 5 held-out cases the mean absolute errors are 0.022 in flow coefficient, 0.021 in swirl number and 54&nbsp;Pa in pressure drop.</p>
   </section>
 
   <div class="bm-stats bm-wide">
@@ -562,7 +562,7 @@ html,body{margin:0;padding:0;background:#EFEAE7;}
 
   <figure class="bm-wide">
     <img class="bm-chart" src="assets/chart-parity.svg" alt="Model against CFD for flow coefficient, swirl number and pressure drop across 264 cases">
-    <figcaption>Model against CFD, 264 cases. Each point is one cylinder at one pair of lifts. Circled points are the four fine-tuning cases.</figcaption>
+    <figcaption>Model against CFD, 264 cases. Each point is one cylinder at one pair of lifts. Circled points were held out of training.</figcaption>
   </figure>
 
   <section class="bm-col">
